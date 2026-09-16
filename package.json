@@ -2,8 +2,10 @@
   "name": "embeddable-mini-game",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
+    "typecheck": "tsc --noEmit",
+    "typecheck:watch": "tsc --noEmit --watch",
     "test": "vitest run",
     "test:watch": "vitest"
   },
