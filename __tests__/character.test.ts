@@ -1,5 +1,6 @@
 import Character from '../src/character.js'
 import { test, expect, vi } from 'vitest'
+import Hurdle from '../src/hurdle.js'
 
 test('캐릭터는 점프할 수 있다', () => {
     const character = new Character()
@@ -42,4 +43,23 @@ test('캐릭터는 처음 점프한 이후 몇 초 이내에 최대 1번 더 점
     vi.advanceTimersByTime(Character.JUMP_AFTER_MS * 0.5)
     expect(character.jump()).toBe(true)
     vi.useRealTimers()
+})
+
+test('캐릭터의 x 좌표의 초기값은 0이다', () => {
+    const character = new Character()
+    expect(character.x).toBe(0)
+})
+
+test('캐릭터의 x 좌표와 허들의 x 좌표가 같으면 만난다', () => {
+    const character = new Character()
+    const hurdle = new Hurdle(character.x)
+    expect(character.isMeetHurdle(hurdle.x)).toBe(true)
+})
+
+test('캐릭터가 허들을 만났을 때 발 높이가 허들의 높이보다 낮으면 죽는다', () => {
+    const character = new Character()
+    const hurdle = new Hurdle(character.x)
+    expect(character.isMeetHurdle(hurdle.x)).toBe(true)
+    expect(character.footHeight < hurdle.height).toBe(true)
+    expect(character.isSurvive(hurdle)).toBe(false)
 })
