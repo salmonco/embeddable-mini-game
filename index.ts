@@ -1,1 +1,2 @@
-console.log('hi')
+const cafe: string = "starbucks"
+console.log(cafe)
