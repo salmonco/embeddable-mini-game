@@ -9,12 +9,25 @@ class Game {
         this.character = character
     }
 
+    init() {
+        if (document.body.querySelector('#mini-game-root') === null) {
+            this.root.id = 'mini-game-root'
+            document.body.appendChild(this.root)
+        }
+        if (this.root.querySelector('#character') === null) {
+            const characterContainer = document.createElement('div')
+            characterContainer.id = 'character'
+            this.root.appendChild(characterContainer)
+        }
+    }
+
     render() {
-        document.body.appendChild(this.root)
-        const characterContainer = document.createElement('div')
-        characterContainer.id = 'character'
+        const characterContainer = this.root.querySelector<HTMLDivElement>('#character')
+        if (characterContainer === null) {
+            throw new Error('초기화해 주세요')
+        }
         characterContainer.style.bottom = this.character.footHeight + 'px'
-        this.root.appendChild(characterContainer)
+        
     }
 }
 
