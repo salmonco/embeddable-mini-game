@@ -27,6 +27,12 @@ class Game {
             hurdleContainer.id = 'hurdle'
             this.root.appendChild(hurdleContainer)
         }
+        if (this.root.querySelector('#jumpButton') === null) {
+            const jumpButton = document.createElement('button')
+            jumpButton.id = 'jumpButton'
+            jumpButton.addEventListener('click', () => this.character.jump())
+            this.root.appendChild(jumpButton)
+        }
     }
 
     render() {
