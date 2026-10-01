@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { test, expect, afterEach } from 'vitest'
+import { test, expect, afterEach, vi } from 'vitest'
 import Character from '../src/character.js'
 import Game from '../src/game.js';
 
@@ -41,4 +41,27 @@ test('캐릭터가 점프하면 발이 올라가 보인다', () => {
     character.jump()
     game.render()
     expect(root.querySelector<HTMLDivElement>('#character')?.style.bottom).toBe('2px')
+})
+
+test('게임이 초기화되면 화면에 허들이 표시된다', () => {
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character)
+    game.init()
+    expect(root.querySelector<HTMLDivElement>('#hurdle')).not.toBeNull()
+})
+
+test('시간이 지날수록 허들이 왼쪽으로 이동되어 보인다', () => {
+    vi.useFakeTimers()
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character)
+    game.init()
+    game.render()
+    const beforeLeft = parseFloat(root.querySelector<HTMLDivElement>('#hurdle')?.style.left ?? '0')
+    vi.advanceTimersByTime(1000)
+    game.render()
+    const afterLeft = parseFloat(root.querySelector<HTMLDivElement>('#hurdle')?.style.left ?? '0')
+    expect(afterLeft).toBeLessThan(beforeLeft)
+    vi.useRealTimers()
 })
