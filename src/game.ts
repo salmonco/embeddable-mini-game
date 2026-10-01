@@ -30,6 +30,7 @@ class Game {
         if (this.root.querySelector('#jumpButton') === null) {
             const jumpButton = document.createElement('button')
             jumpButton.id = 'jumpButton'
+            jumpButton.innerText = 'JUMP!'
             jumpButton.addEventListener('click', () => this.character.jump())
             this.root.appendChild(jumpButton)
         }
