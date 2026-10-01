@@ -10,3 +10,11 @@
     height: 150px;
     background-color: aqua;
 }
+
+#hurdle {
+    position: absolute;
+    bottom: 0;
+    width: 50px;
+    height: 50px;
+    background-color: black;
+}
