@@ -7,23 +7,23 @@ test('캐릭터는 점프할 수 있다', () => {
     expect(character.jump()).toBe(true)
 })
 
-test('캐릭터가 점프하면 캐릭터의 발 높이가 1 증가한다', () => {
+test('캐릭터가 점프하면 캐릭터의 발 높이가 증가한다', () => {
     const character = new Character()
     character.jump()
-    expect(character.footHeight).toBe(1)
+    expect(character.footHeight).toBe(Character.JUMP_HEIGHT)
     character.jump()
-    expect(character.footHeight).toBe(2)
+    expect(character.footHeight).toBe(Character.JUMP_HEIGHT * 2)
 })
 
-test('캐릭터가 점프한 후 몇 초 뒤에 발 높이가 1 감소한다', () => {
+test('캐릭터가 점프한 후 몇 초 뒤에 발 높이가 감소한다', () => {
     vi.useFakeTimers()
     const character = new Character()
     character.jump()
     vi.advanceTimersByTime(Character.JUMP_AFTER_MS * 0.5)
     character.jump()
-    expect(character.footHeight).toBe(2)
+    expect(character.footHeight).toBe(Character.JUMP_HEIGHT * 2)
     vi.advanceTimersByTime(Character.JUMP_AFTER_MS * 0.5)
-    expect(character.footHeight).toBe(1)
+    expect(character.footHeight).toBe(Character.JUMP_HEIGHT)
     vi.advanceTimersByTime(Character.JUMP_AFTER_MS * 0.5)
     expect(character.footHeight).toBe(0)
     vi.useRealTimers()

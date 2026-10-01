@@ -3,6 +3,7 @@ import type Hurdle from "./hurdle.js"
 class Character {
     static JUMP_AFTER_MS = 2000
     static MAX_JUMP_COUNT = 2
+    static JUMP_HEIGHT = 200
 
     private _footHeight = 0
     private _jump_start_ms = 0
@@ -17,13 +18,13 @@ class Character {
             }
         }
         this._jump_count += 1
-        this._footHeight += 1
+        this._footHeight += Character.JUMP_HEIGHT
         if (this._jump_count === 1) {
             this._jump_start_ms = Date.now()
         }
         setTimeout(() => {
             this._jump_count -= 1
-            this._footHeight -= 1
+            this._footHeight -= Character.JUMP_HEIGHT
         }, Character.JUMP_AFTER_MS);
         return true
     }
