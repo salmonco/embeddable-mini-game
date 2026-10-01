@@ -1,18 +1,15 @@
 class Hurdle {
-    static SPEED = 0.001
+    static SPEED = 0.01
 
     private _height = 1
     private _x
 
     constructor(x: number) {
         this._x = x
-        this._process()
     }
 
-    private _process() {
-        setInterval(() => {
-            this._x -= 1000 * Hurdle.SPEED
-        }, 1000);
+    tick(delta: number) {
+        this._x -= delta * Hurdle.SPEED
     }
 
     get height() {
