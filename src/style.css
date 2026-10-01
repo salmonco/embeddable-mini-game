@@ -1,0 +1,12 @@
+#mini-game-root {
+    position: relative;
+    height: 100vh;
+}
+
+#character {
+    position: absolute;
+    left: 0;
+    width: 100px;
+    height: 150px;
+    background-color: aqua;
+}

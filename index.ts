@@ -1,5 +1,8 @@
-import { time } from "./example.js"
+import Character from "./src/character.js";
+import Game from "./src/game.js";
 
-const cafe: string = "starbucks"
-console.log(cafe)
-console.log(time)
+const root = document.createElement('div')
+const character = new Character()
+const game = new Game(root, character)
+game.init()
+game.render()
