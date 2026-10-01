@@ -5,11 +5,13 @@ class Game {
     private root
     private character
     private hurdle
+    private requestAnimationFrameId: number | null
 
     constructor(root: HTMLDivElement, character: Character) {
         this.root = root
         this.character = character
-        this.hurdle = new Hurdle(6)
+        this.hurdle = new Hurdle(300)
+        this.requestAnimationFrameId = null
     }
 
     init() {
@@ -48,6 +50,28 @@ class Game {
             throw new Error('초기화해 주세요')
         }
         hurdleContainer.style.left = this.hurdle.x + 'px'
+    }
+
+    start() {
+        let lastTime: number | null = null
+
+        const loop = (now: number) => {
+            const delta = lastTime === null ? 0 : now - lastTime
+            lastTime = now
+
+            this.hurdle.tick(delta)
+            this.render()
+            this.requestAnimationFrameId = requestAnimationFrame(loop)
+        }
+        this.requestAnimationFrameId = requestAnimationFrame(loop)
+    }
+
+    stop() {
+        if (this.requestAnimationFrameId === null) {
+            return
+        }
+        cancelAnimationFrame(this.requestAnimationFrameId)
+        this.requestAnimationFrameId = null
     }
 }
 
