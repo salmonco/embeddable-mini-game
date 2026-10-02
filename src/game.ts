@@ -2,16 +2,15 @@ import type Character from "./character.js";
 import Hurdle from "./hurdle.js";
 
 class Game {
-    private _root
-    private _character
-    private _hurdle
-    private _requestAnimationFrameId: number | null
+    private _root: HTMLDivElement
+    private _character: Character
+    private _hurdle: Hurdle = new Hurdle(300)
+    private _requestAnimationFrameId: number | null = null
+    private _isPaused: boolean = false
 
     constructor(root: HTMLDivElement, character: Character) {
         this._root = root
         this._character = character
-        this._hurdle = new Hurdle(300)
-        this._requestAnimationFrameId = null
     }
 
     init() {
@@ -53,8 +52,20 @@ class Game {
         this._requestAnimationFrameId = null
     }
 
+    pause() {
+        if (this.requestAnimationFrameId === null) {
+            return
+        }
+        cancelAnimationFrame(this.requestAnimationFrameId)
+        this._isPaused = true
+    }
+
     get requestAnimationFrameId() {
         return this._requestAnimationFrameId
+    }
+
+    get isPaused() {
+        return this._isPaused
     }
 
     private _createRoot() {
@@ -86,9 +97,10 @@ class Game {
             startButton.id = 'startButton'
             startButton.innerText = 'START!'
             startButton.addEventListener('click', () => {
+                this._hideStartButton()
                 this._createJumpButton()
                 this._createStopButton()
-                this._hideStartButton()
+                this._createPauseButton()
                 this.start()
             })
             this._root.appendChild(startButton)
@@ -118,25 +130,37 @@ class Game {
             stopButton.id = 'stopButton'
             stopButton.innerText = 'STOP'
             stopButton.addEventListener('click', () => {
-                this._createResumeButton()
-                this._hideStopButton()
                 this.stop()
             })
             this._root.appendChild(stopButton)
         }
     }
 
-    private _hideStopButton() {
-        const stopButton = this._root.querySelector<HTMLButtonElement>('#stopButton')
-        if (stopButton !== null) {
-            stopButton.style.display = 'none'
+    private _createPauseButton() {
+        if (this._root.querySelector('#pauseButton') === null) {
+            const pauseButton = document.createElement('button')
+            pauseButton.id = 'pauseButton'
+            pauseButton.innerText = 'PAUSE'
+            pauseButton.addEventListener('click', () => {
+                this._hidePauseButton()
+                this._createResumeButton()
+                this.pause()
+            })
+            this._root.appendChild(pauseButton)
         }
     }
 
-    private _showStopButton() {
-        const stopButton = this._root.querySelector<HTMLButtonElement>('#stopButton')
-        if (stopButton !== null) {
-            stopButton.style.display = 'block'
+    private _hidePauseButton() {
+        const pauseButton = this._root.querySelector<HTMLButtonElement>('#pauseButton')
+        if (pauseButton !== null) {
+            pauseButton.style.display = 'none'
+        }
+    }
+
+    private _showPauseButton() {
+        const pauseButton = this._root.querySelector<HTMLButtonElement>('#pauseButton')
+        if (pauseButton !== null) {
+            pauseButton.style.display = 'block'
         }
     }
 
@@ -147,8 +171,7 @@ class Game {
             resumeButton.innerText = 'RESUME'
             resumeButton.addEventListener('click', () => {
                 this._hideResumeButton()
-                this._showStopButton()
-                this.stop()
+                this._showPauseButton()
             })
             this._root.appendChild(resumeButton)
         }
