@@ -155,6 +155,7 @@ class Game {
             pauseButton.addEventListener('click', () => {
                 this._hidePauseButton()
                 this._createResumeButton()
+                this._showResumeButton()
                 this.pause()
             })
             this._root.appendChild(pauseButton)
@@ -193,6 +194,13 @@ class Game {
         const resumeButton = this._root.querySelector<HTMLButtonElement>('#resumeButton')
         if (resumeButton !== null) {
             resumeButton.style.display = 'none'
+        }
+    }
+
+    private _showResumeButton() {
+        const resumeButton = this._root.querySelector<HTMLButtonElement>('#resumeButton')
+        if (resumeButton !== null) {
+            resumeButton.style.display = 'block'
         }
     }
 }
