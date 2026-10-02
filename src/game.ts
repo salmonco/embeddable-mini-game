@@ -112,6 +112,8 @@ class Game {
                 this._createJumpButton()
                 this._createStopButton()
                 this._createPauseButton()
+                this._showStopButton()
+                this._showPauseButton()
                 this.start()
             })
             this._root.appendChild(startButton)
@@ -122,6 +124,13 @@ class Game {
         const startButton = this._root.querySelector<HTMLButtonElement>('#startButton')
         if (startButton !== null) {
             startButton.style.display = 'none'
+        }
+    }
+
+    private _showStartButton() {
+        const startButton = this._root.querySelector<HTMLButtonElement>('#startButton')
+        if (startButton !== null) {
+            startButton.style.display = 'block'
         }
     }
 
@@ -141,9 +150,27 @@ class Game {
             stopButton.id = 'stopButton'
             stopButton.innerText = 'STOP'
             stopButton.addEventListener('click', () => {
+                this._hideStopButton()
+                this._hidePauseButton()
+                this._hideResumeButton()
+                this._showStartButton()
                 this.stop()
             })
             this._root.appendChild(stopButton)
+        }
+    }
+
+    private _hideStopButton() {
+        const stopButton = this._root.querySelector<HTMLButtonElement>('#stopButton')
+        if (stopButton !== null) {
+            stopButton.style.display = 'none'
+        }
+    }
+
+    private _showStopButton() {
+        const stopButton = this._root.querySelector<HTMLButtonElement>('#stopButton')
+        if (stopButton !== null) {
+            stopButton.style.display = 'block'
         }
     }
 

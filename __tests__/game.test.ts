@@ -206,6 +206,38 @@ test('시작 버튼을 누르면 화면에 시작 버튼이 사라진다', () =>
     expect(root.querySelector<HTMLButtonElement>('#startButton')?.style.display).toBe('none')
 })
 
+test('시작 버튼을 누른 후 종료 버튼을 누르고 다시 시작 버튼을 누르면, 시작 버튼이 사라지고 종료, 중단 버튼이 표시된다', () => {
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character)
+    game.init()
+    const startButton = document.querySelector<HTMLButtonElement>('#startButton')
+    startButton?.click()
+    const stopButton = document.querySelector<HTMLButtonElement>('#stopButton')
+    stopButton?.click()
+    startButton?.click()
+    expect(root.querySelector<HTMLButtonElement>('#startButton')?.style.display).toBe('none')
+    expect(root.querySelector<HTMLButtonElement>('#stopButton')?.style.display).not.toBe('none')
+    expect(root.querySelector<HTMLButtonElement>('#pauseButton')?.style.display).not.toBe('none')
+})
+
+test('종료 버튼을 누르면 화면에 종료, 중단, 재개 버튼이 사라지고 시작 버튼이 표시된다', () => {
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character)
+    game.init()
+    const startButton = document.querySelector<HTMLButtonElement>('#startButton')
+    startButton?.click()
+    const pauseButton = document.querySelector<HTMLButtonElement>('#pauseButton')
+    pauseButton?.click()
+    const stopButton = document.querySelector<HTMLButtonElement>('#stopButton')
+    stopButton?.click()
+    expect(root.querySelector<HTMLButtonElement>('#stopButton')?.style.display).toBe('none')
+    expect(root.querySelector<HTMLButtonElement>('#pauseButton')?.style.display).toBe('none')
+    expect(root.querySelector<HTMLButtonElement>('#resumeButton')?.style.display).toBe('none')
+    expect(root.querySelector<HTMLButtonElement>('#startButton')?.style.display).not.toBe('none')
+})
+
 test('중단 버튼을 누르면 화면에 재개 버튼이 표시된다', () => {
     const root = document.createElement('div')
     const character = new Character()
