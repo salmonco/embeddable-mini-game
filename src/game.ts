@@ -39,6 +39,7 @@ class Game {
         if (this._root.querySelector('#startButton') === null) {
             const startButton = document.createElement('button')
             startButton.id = 'startButton'
+            startButton.innerText = 'START!'
             startButton.addEventListener('click', () => this.start())
             this._root.appendChild(startButton)
         }
