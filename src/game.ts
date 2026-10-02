@@ -15,30 +15,10 @@ class Game {
     }
 
     init() {
-        if (document.body.querySelector('#mini-game-root') === null) {
-            this._root.id = 'mini-game-root'
-            document.body.appendChild(this._root)
-        }
-        if (this._root.querySelector('#character') === null) {
-            const characterContainer = document.createElement('div')
-            characterContainer.id = 'character'
-            this._root.appendChild(characterContainer)
-        }
-        if (this._root.querySelector('#hurdle') === null) {
-            const hurdleContainer = document.createElement('div')
-            hurdleContainer.id = 'hurdle'
-            this._root.appendChild(hurdleContainer)
-        }
-        if (this._root.querySelector('#startButton') === null) {
-            const startButton = document.createElement('button')
-            startButton.id = 'startButton'
-            startButton.innerText = 'START!'
-            startButton.addEventListener('click', () => {
-                this._createJumpButton()
-                this.start()
-            })
-            this._root.appendChild(startButton)
-        }
+        this._createRoot()
+        this._createCharacter()
+        this._createHurdle()
+        this._createStartButton()
     }
 
     render() {
@@ -79,6 +59,42 @@ class Game {
 
     get requestAnimationFrameId() {
         return this._requestAnimationFrameId
+    }
+
+    private _createRoot() {
+        if (document.body.querySelector('#mini-game-root') === null) {
+            this._root.id = 'mini-game-root'
+            document.body.appendChild(this._root)
+        }
+    }
+
+    private _createCharacter() {
+        if (this._root.querySelector('#character') === null) {
+            const characterContainer = document.createElement('div')
+            characterContainer.id = 'character'
+            this._root.appendChild(characterContainer)
+        }
+    }
+
+    private _createHurdle() {
+        if (this._root.querySelector('#hurdle') === null) {
+            const hurdleContainer = document.createElement('div')
+            hurdleContainer.id = 'hurdle'
+            this._root.appendChild(hurdleContainer)
+        }
+    }
+
+    private _createStartButton() {
+        if (this._root.querySelector('#startButton') === null) {
+            const startButton = document.createElement('button')
+            startButton.id = 'startButton'
+            startButton.innerText = 'START!'
+            startButton.addEventListener('click', () => {
+                this._createJumpButton()
+                this.start()
+            })
+            this._root.appendChild(startButton)
+        }
     }
 
     private _createJumpButton() {
