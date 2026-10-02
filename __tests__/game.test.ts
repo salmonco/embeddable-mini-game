@@ -168,3 +168,16 @@ test('중단 버튼을 누르면 화면에 재개 버튼이 표시된다', () =>
     stopButton?.click()
     expect(root.querySelector<HTMLButtonElement>('#resumeButton')).not.toBeNull()
 })
+
+test('중단 버튼을 누르면 화면에 중단 버튼이 사라진다', () => {
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character)
+    game.init()
+    const startButton = document.querySelector<HTMLButtonElement>('#startButton')
+    startButton?.click()
+    expect(root.querySelector<HTMLButtonElement>('#stopButton')?.style.display).not.toBe('none')
+    const stopButton = document.querySelector<HTMLButtonElement>('#stopButton')
+    stopButton?.click()
+    expect(root.querySelector<HTMLButtonElement>('#stopButton')?.style.display).toBe('none')
+})

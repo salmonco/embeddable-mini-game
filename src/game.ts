@@ -119,9 +119,17 @@ class Game {
             stopButton.innerText = 'STOP'
             stopButton.addEventListener('click', () => {
                 this._createResumeButton()
+                this._hideStopButton()
                 this.stop()
             })
             this._root.appendChild(stopButton)
+        }
+    }
+
+    private _hideStopButton() {
+        const stopButton = this._root.querySelector<HTMLButtonElement>('#stopButton')
+        if (stopButton !== null) {
+            stopButton.style.display = 'none'
         }
     }
 
