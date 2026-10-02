@@ -42,6 +42,13 @@
     float: right;
 }
 
+#pauseButton {
+    width: 100px;
+    height: 100px;
+    background-color: yellow;
+    float: right;
+}
+
 #resumeButton {
     width: 100px;
     height: 100px;
