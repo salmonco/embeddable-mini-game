@@ -33,3 +33,11 @@
     color: white;
     float: right;
 }
+
+#stopButton {
+    width: 100px;
+    height: 100px;
+    background-color: red;
+    color: white;
+    float: right;
+}
