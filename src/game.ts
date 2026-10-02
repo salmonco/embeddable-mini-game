@@ -23,15 +23,11 @@ class Game {
 
     render() {
         const characterContainer = this._root.querySelector<HTMLDivElement>('#character')
-        if (characterContainer === null) {
+        const hurdleContainer = this._root.querySelector<HTMLDivElement>('#hurdle')
+        if (characterContainer === null || hurdleContainer === null) {
             throw new Error('초기화해 주세요')
         }
         characterContainer.style.bottom = this._character.footHeight + 'px'
-
-        const hurdleContainer = this._root.querySelector<HTMLDivElement>('#hurdle')
-        if (hurdleContainer === null) {
-            throw new Error('초기화해 주세요')
-        }
         hurdleContainer.style.left = this._hurdle.x + 'px'
     }
 
