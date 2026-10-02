@@ -7,6 +7,7 @@ class Game {
     private _hurdle: Hurdle = new Hurdle(300)
     private _requestAnimationFrameId: number | null = null
     private _isPaused: boolean = false
+    private _lastTime: number | null = null
 
     constructor(root: HTMLDivElement, character: Character) {
         this._root = root
@@ -31,17 +32,7 @@ class Game {
     }
 
     start() {
-        let lastTime: number | null = null
-
-        const loop = (now: number) => {
-            const delta = lastTime === null ? 0 : now - lastTime
-            lastTime = now
-
-            this._hurdle.tick(delta)
-            this.render()
-            this._requestAnimationFrameId = requestAnimationFrame(loop)
-        }
-        this._requestAnimationFrameId = requestAnimationFrame(loop)
+        this._requestAnimationFrameId = requestAnimationFrame(this._animate)
     }
 
     stop() {
@@ -60,12 +51,32 @@ class Game {
         this._isPaused = true
     }
 
+    resume() {
+        if (this.requestAnimationFrameId === null) {
+            return
+        }
+        this._requestAnimationFrameId = requestAnimationFrame(this._animate)
+        this._isPaused = false
+    }
+
     get requestAnimationFrameId() {
         return this._requestAnimationFrameId
     }
 
     get isPaused() {
         return this._isPaused
+    }
+
+    /**
+     * requestAnimationFrame의 콜백 함수로 넘길 때
+     * this를 Game으로 바인딩하기 위해 화살표 함수 이용
+     */
+    private _animate = (now: number) => {
+        const delta = this._lastTime === null ? 0 : now - this._lastTime
+        this._lastTime = now
+        this._hurdle.tick(delta)
+        this.render()
+        this._requestAnimationFrameId = requestAnimationFrame(this._animate)
     }
 
     private _createRoot() {
@@ -172,6 +183,7 @@ class Game {
             resumeButton.addEventListener('click', () => {
                 this._hideResumeButton()
                 this._showPauseButton()
+                this.resume()
             })
             this._root.appendChild(resumeButton)
         }

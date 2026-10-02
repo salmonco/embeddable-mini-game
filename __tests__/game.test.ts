@@ -7,12 +7,20 @@ afterEach(() => {
     document.body.innerHTML = ''
 })
 
+// 게임 초기화
 test('게임이 초기화되면 document body에 루트 DOM이 붙는다', () => {
     const root = document.createElement('div')
     const character = new Character()
     const game = new Game(root, character)
     game.init()
     expect(document.body.querySelector<HTMLDivElement>('#mini-game-root')).not.toBeNull()
+})
+
+test('초기화하기 전에 렌더하면 에러를 던진다', () => {
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character)
+    expect(() => game.render()).toThrow(new Error('초기화해 주세요'))
 })
 
 test('게임이 초기화되면 화면에 캐릭터가 표시된다', () => {
@@ -23,11 +31,88 @@ test('게임이 초기화되면 화면에 캐릭터가 표시된다', () => {
     expect(root.querySelector<HTMLDivElement>('#character')).not.toBeNull()
 })
 
-test('초기화하기 전에 렌더하면 에러를 던진다', () => {
+test('게임이 초기화되면 화면에 허들이 표시된다', () => {
     const root = document.createElement('div')
     const character = new Character()
     const game = new Game(root, character)
-    expect(() => game.render()).toThrow(new Error('초기화해 주세요'))
+    game.init()
+    expect(root.querySelector<HTMLDivElement>('#hurdle')).not.toBeNull()
+})
+
+test('게임이 초기화되면 화면에 시작 버튼이 표시된다', () => {
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character)
+    game.init()
+    expect(root.querySelector<HTMLButtonElement>('#startButton')).not.toBeNull()
+})
+
+// 게임 동작
+test('시작 버튼을 누르면 게임이 시작된다', () => {
+    vi.useFakeTimers()
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character)
+    game.init()
+    expect(game.requestAnimationFrameId).toBeNull()
+    const startButton = document.querySelector<HTMLButtonElement>('#startButton')
+    startButton?.click()
+    vi.advanceTimersToNextFrame()
+    expect(game.requestAnimationFrameId).not.toBeNull()
+    vi.useRealTimers()
+})
+
+test('종료 버튼을 누르면 게임이 종료된다', () => {
+    vi.useFakeTimers()
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character)
+    game.init()
+    const startButton = document.querySelector<HTMLButtonElement>('#startButton')
+    startButton?.click()
+    vi.advanceTimersToNextFrame()
+    expect(game.requestAnimationFrameId).not.toBeNull()
+    const stopButton = document.querySelector<HTMLButtonElement>('#stopButton')
+    stopButton?.click()
+    vi.advanceTimersToNextFrame()
+    expect(game.requestAnimationFrameId).toBeNull()
+    vi.useRealTimers()
+})
+
+test('중단 버튼을 누르면 게임이 중단된다', () => {
+    vi.useFakeTimers()
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character)
+    game.init()
+    const startButton = document.querySelector<HTMLButtonElement>('#startButton')
+    startButton?.click()
+    vi.advanceTimersToNextFrame()
+    expect(game.isPaused).toBe(false)
+    const pauseButton = document.querySelector<HTMLButtonElement>('#pauseButton')
+    pauseButton?.click()
+    vi.advanceTimersToNextFrame()
+    expect(game.isPaused).toBe(true)
+    vi.useRealTimers()
+})
+
+test('재개 버튼을 누르면 게임이 재개된다', () => {
+    vi.useFakeTimers()
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character)
+    game.init()
+    const startButton = document.querySelector<HTMLButtonElement>('#startButton')
+    startButton?.click()
+    const pauseButton = document.querySelector<HTMLButtonElement>('#pauseButton')
+    pauseButton?.click()
+    vi.advanceTimersToNextFrame()
+    expect(game.isPaused).toBe(true)
+    const resumeButton = document.querySelector<HTMLButtonElement>('#resumeButton')
+    resumeButton?.click()
+    vi.advanceTimersToNextFrame()
+    expect(game.isPaused).toBe(false)
+    vi.useRealTimers()
 })
 
 test('캐릭터가 점프하면 발이 올라가 보인다', () => {
@@ -41,14 +126,6 @@ test('캐릭터가 점프하면 발이 올라가 보인다', () => {
     character.jump()
     game.render()
     expect(root.querySelector<HTMLDivElement>('#character')?.style.bottom).toBe(Character.JUMP_HEIGHT * 2 + 'px')
-})
-
-test('게임이 초기화되면 화면에 허들이 표시된다', () => {
-    const root = document.createElement('div')
-    const character = new Character()
-    const game = new Game(root, character)
-    game.init()
-    expect(root.querySelector<HTMLDivElement>('#hurdle')).not.toBeNull()
 })
 
 test('시간이 지날수록 허들이 왼쪽으로 이동되어 보인다', () => {
@@ -65,39 +142,6 @@ test('시간이 지날수록 허들이 왼쪽으로 이동되어 보인다', () 
     expect(afterLeft).toBeLessThan(beforeLeft)
     game.stop()
     vi.useRealTimers()
-})
-
-test('게임이 초기화되면 화면에 시작 버튼이 표시된다', () => {
-    const root = document.createElement('div')
-    const character = new Character()
-    const game = new Game(root, character)
-    game.init()
-    expect(root.querySelector<HTMLButtonElement>('#startButton')).not.toBeNull()
-})
-
-test('시작 버튼을 누르면 게임이 시작된다', () => {
-    vi.useFakeTimers()
-    const root = document.createElement('div')
-    const character = new Character()
-    const game = new Game(root, character)
-    game.init()
-    expect(game.requestAnimationFrameId).toBeNull()
-    const startButton = document.querySelector<HTMLButtonElement>('#startButton')
-    startButton?.click()
-    vi.advanceTimersToNextFrame()
-    expect(game.requestAnimationFrameId).not.toBeNull()
-    vi.useRealTimers()
-})
-
-test('시작 버튼을 누르면 화면에 점프 버튼이 표시된다', () => {
-    const root = document.createElement('div')
-    const character = new Character()
-    const game = new Game(root, character)
-    game.init()
-    expect(root.querySelector<HTMLButtonElement>('#jumpButton')).toBeNull()
-    const startButton = document.querySelector<HTMLButtonElement>('#startButton')
-    startButton?.click()
-    expect(root.querySelector<HTMLButtonElement>('#jumpButton')).not.toBeNull()
 })
 
 test('점프 버튼을 누르면 캐릭터가 점프한다', () => {
@@ -117,6 +161,18 @@ test('점프 버튼을 누르면 캐릭터가 점프한다', () => {
     expect(root.querySelector<HTMLDivElement>('#character')?.style.bottom).toBe(Character.JUMP_HEIGHT * 2 + 'px')
 })
 
+// 비주얼
+test('시작 버튼을 누르면 화면에 점프 버튼이 표시된다', () => {
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character)
+    game.init()
+    expect(root.querySelector<HTMLButtonElement>('#jumpButton')).toBeNull()
+    const startButton = document.querySelector<HTMLButtonElement>('#startButton')
+    startButton?.click()
+    expect(root.querySelector<HTMLButtonElement>('#jumpButton')).not.toBeNull()
+})
+
 test('시작 버튼을 누르면 화면에 종료 버튼이 표시된다', () => {
     const root = document.createElement('div')
     const character = new Character()
@@ -126,23 +182,6 @@ test('시작 버튼을 누르면 화면에 종료 버튼이 표시된다', () =>
     const startButton = document.querySelector<HTMLButtonElement>('#startButton')
     startButton?.click()
     expect(root.querySelector<HTMLButtonElement>('#stopButton')).not.toBeNull()
-})
-
-test('종료 버튼을 누르면 게임이 종료된다', () => {
-    vi.useFakeTimers()
-    const root = document.createElement('div')
-    const character = new Character()
-    const game = new Game(root, character)
-    game.init()
-    const startButton = document.querySelector<HTMLButtonElement>('#startButton')
-    startButton?.click()
-    vi.advanceTimersToNextFrame()
-    expect(game.requestAnimationFrameId).not.toBeNull()
-    const stopButton = document.querySelector<HTMLButtonElement>('#stopButton')
-    stopButton?.click()
-    vi.advanceTimersToNextFrame()
-    expect(game.requestAnimationFrameId).toBeNull()
-    vi.useRealTimers()
 })
 
 test('시작 버튼을 누르면 화면에 중단 버튼이 표시된다', () => {
@@ -165,23 +204,6 @@ test('시작 버튼을 누르면 화면에 시작 버튼이 사라진다', () =>
     const startButton = document.querySelector<HTMLButtonElement>('#startButton')
     startButton?.click()
     expect(root.querySelector<HTMLButtonElement>('#startButton')?.style.display).toBe('none')
-})
-
-test('중단 버튼을 누르면 게임이 중단된다', () => {
-    vi.useFakeTimers()
-    const root = document.createElement('div')
-    const character = new Character()
-    const game = new Game(root, character)
-    game.init()
-    const startButton = document.querySelector<HTMLButtonElement>('#startButton')
-    startButton?.click()
-    vi.advanceTimersToNextFrame()
-    expect(game.isPaused).toBe(false)
-    const pauseButton = document.querySelector<HTMLButtonElement>('#pauseButton')
-    pauseButton?.click()
-    vi.advanceTimersToNextFrame()
-    expect(game.isPaused).toBe(true)
-    vi.useRealTimers()
 })
 
 test('중단 버튼을 누르면 화면에 재개 버튼이 표시된다', () => {
