@@ -87,6 +87,7 @@ class Game {
             startButton.innerText = 'START!'
             startButton.addEventListener('click', () => {
                 this._createJumpButton()
+                this._createStopButton()
                 this.start()
             })
             this._root.appendChild(startButton)
@@ -100,6 +101,15 @@ class Game {
             jumpButton.innerText = 'JUMP!'
             jumpButton.addEventListener('click', () => this._character.jump())
             this._root.appendChild(jumpButton)
+        }
+    }
+
+    private _createStopButton() {
+        if (this._root.querySelector('#stopButton') === null) {
+            const stopButton = document.createElement('button')
+            stopButton.id = 'stopButton'
+            stopButton.innerText = 'STOP'
+            this._root.appendChild(stopButton)
         }
     }
 }

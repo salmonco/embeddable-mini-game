@@ -116,3 +116,14 @@ test('점프 버튼을 누르면 캐릭터가 점프한다', () => {
     vi.advanceTimersToNextFrame()
     expect(root.querySelector<HTMLDivElement>('#character')?.style.bottom).toBe(Character.JUMP_HEIGHT * 2 + 'px')
 })
+
+test('시작 버튼을 누르면 화면에 중단 버튼이 표시된다', () => {
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character)
+    game.init()
+    expect(root.querySelector<HTMLDivElement>('#stopButton')).toBeNull()
+    const startButton = document.querySelector<HTMLButtonElement>('#startButton')
+    startButton?.click()
+    expect(root.querySelector<HTMLDivElement>('#stopButton')).not.toBeNull()
+})
