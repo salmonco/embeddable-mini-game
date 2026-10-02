@@ -72,7 +72,7 @@ test('게임이 초기화되면 화면에 시작 버튼이 표시된다', () => 
     const character = new Character()
     const game = new Game(root, character)
     game.init()
-    expect(root.querySelector<HTMLDivElement>('#startButton')).not.toBeNull()
+    expect(root.querySelector<HTMLButtonElement>('#startButton')).not.toBeNull()
 })
 
 test('시작 버튼을 누르면 게임이 시작된다', () => {
@@ -94,10 +94,10 @@ test('시작 버튼을 누르면 화면에 점프 버튼이 표시된다', () =>
     const character = new Character()
     const game = new Game(root, character)
     game.init()
-    expect(root.querySelector<HTMLDivElement>('#jumpButton')).toBeNull()
+    expect(root.querySelector<HTMLButtonElement>('#jumpButton')).toBeNull()
     const startButton = document.querySelector<HTMLButtonElement>('#startButton')
     startButton?.click()
-    expect(root.querySelector<HTMLDivElement>('#jumpButton')).not.toBeNull()
+    expect(root.querySelector<HTMLButtonElement>('#jumpButton')).not.toBeNull()
 })
 
 test('점프 버튼을 누르면 캐릭터가 점프한다', () => {
@@ -122,8 +122,19 @@ test('시작 버튼을 누르면 화면에 중단 버튼이 표시된다', () =>
     const character = new Character()
     const game = new Game(root, character)
     game.init()
-    expect(root.querySelector<HTMLDivElement>('#stopButton')).toBeNull()
+    expect(root.querySelector<HTMLButtonElement>('#stopButton')).toBeNull()
     const startButton = document.querySelector<HTMLButtonElement>('#startButton')
     startButton?.click()
-    expect(root.querySelector<HTMLDivElement>('#stopButton')).not.toBeNull()
+    expect(root.querySelector<HTMLButtonElement>('#stopButton')).not.toBeNull()
+})
+
+test('시작 버튼을 누르면 화면에 시작 버튼이 사라진다', () => {
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character)
+    game.init()
+    expect(root.querySelector<HTMLButtonElement>('#startButton')?.style.display).not.toBe('none')
+    const startButton = document.querySelector<HTMLButtonElement>('#startButton')
+    startButton?.click()
+    expect(root.querySelector<HTMLButtonElement>('#startButton')?.style.display).toBe('none')
 })

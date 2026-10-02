@@ -88,9 +88,17 @@ class Game {
             startButton.addEventListener('click', () => {
                 this._createJumpButton()
                 this._createStopButton()
+                this._hideStartButton()
                 this.start()
             })
             this._root.appendChild(startButton)
+        }
+    }
+
+    private _hideStartButton() {
+        const startButton = this._root.querySelector<HTMLButtonElement>('#startButton')
+        if (startButton !== null) {
+            startButton.style.display = 'none'
         }
     }
 
