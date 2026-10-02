@@ -118,9 +118,19 @@ class Game {
             stopButton.id = 'stopButton'
             stopButton.innerText = 'STOP'
             stopButton.addEventListener('click', () => {
+                this._createResumeButton()
                 this.stop()
             })
             this._root.appendChild(stopButton)
+        }
+    }
+
+    private _createResumeButton() {
+        if (this._root.querySelector('#resumeButton') === null) {
+            const resumeButton = document.createElement('button')
+            resumeButton.id = 'resumeButton'
+            resumeButton.innerText = 'RESUME'
+            this._root.appendChild(resumeButton)
         }
     }
 }
