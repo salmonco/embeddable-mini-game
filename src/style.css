@@ -22,7 +22,7 @@
 #jumpButton {
     width: 100px;
     height: 100px;
-    background-color: green;
+    background-color: orange;
     color: white;
 }
 
@@ -38,6 +38,14 @@
     width: 100px;
     height: 100px;
     background-color: red;
+    color: white;
+    float: right;
+}
+
+#resumeButton {
+    width: 100px;
+    height: 100px;
+    background-color: green;
     color: white;
     float: right;
 }
