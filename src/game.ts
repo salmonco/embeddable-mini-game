@@ -29,18 +29,14 @@ class Game {
             hurdleContainer.id = 'hurdle'
             this._root.appendChild(hurdleContainer)
         }
-        if (this._root.querySelector('#jumpButton') === null) {
-            const jumpButton = document.createElement('button')
-            jumpButton.id = 'jumpButton'
-            jumpButton.innerText = 'JUMP!'
-            jumpButton.addEventListener('click', () => this._character.jump())
-            this._root.appendChild(jumpButton)
-        }
         if (this._root.querySelector('#startButton') === null) {
             const startButton = document.createElement('button')
             startButton.id = 'startButton'
             startButton.innerText = 'START!'
-            startButton.addEventListener('click', () => this.start())
+            startButton.addEventListener('click', () => {
+                this._createJumpButton()
+                this.start()
+            })
             this._root.appendChild(startButton)
         }
     }
@@ -83,6 +79,16 @@ class Game {
 
     get requestAnimationFrameId() {
         return this._requestAnimationFrameId
+    }
+
+    private _createJumpButton() {
+        if (this._root.querySelector('#jumpButton') === null) {
+            const jumpButton = document.createElement('button')
+            jumpButton.id = 'jumpButton'
+            jumpButton.innerText = 'JUMP!'
+            jumpButton.addEventListener('click', () => this._character.jump())
+            this._root.appendChild(jumpButton)
+        }
     }
 }
 
