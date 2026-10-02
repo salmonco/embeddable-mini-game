@@ -117,6 +117,9 @@ class Game {
             const stopButton = document.createElement('button')
             stopButton.id = 'stopButton'
             stopButton.innerText = 'STOP'
+            stopButton.addEventListener('click', () => {
+                this.stop()
+            })
             this._root.appendChild(stopButton)
         }
     }
