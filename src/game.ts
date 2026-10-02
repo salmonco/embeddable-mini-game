@@ -5,13 +5,13 @@ class Game {
     private root
     private character
     private hurdle
-    private requestAnimationFrameId: number | null
+    private _requestAnimationFrameId: number | null
 
     constructor(root: HTMLDivElement, character: Character) {
         this.root = root
         this.character = character
         this.hurdle = new Hurdle(300)
-        this.requestAnimationFrameId = null
+        this._requestAnimationFrameId = null
     }
 
     init() {
@@ -35,6 +35,12 @@ class Game {
             jumpButton.innerText = 'JUMP!'
             jumpButton.addEventListener('click', () => this.character.jump())
             this.root.appendChild(jumpButton)
+        }
+        if (this.root.querySelector('#startButton') === null) {
+            const startButton = document.createElement('button')
+            startButton.id = 'startButton'
+            startButton.addEventListener('click', () => this.start())
+            this.root.appendChild(startButton)
         }
     }
 
@@ -61,9 +67,9 @@ class Game {
 
             this.hurdle.tick(delta)
             this.render()
-            this.requestAnimationFrameId = requestAnimationFrame(loop)
+            this._requestAnimationFrameId = requestAnimationFrame(loop)
         }
-        this.requestAnimationFrameId = requestAnimationFrame(loop)
+        this._requestAnimationFrameId = requestAnimationFrame(loop)
     }
 
     stop() {
@@ -71,7 +77,11 @@ class Game {
             return
         }
         cancelAnimationFrame(this.requestAnimationFrameId)
-        this.requestAnimationFrameId = null
+        this._requestAnimationFrameId = null
+    }
+
+    get requestAnimationFrameId() {
+        return this._requestAnimationFrameId
     }
 }
 

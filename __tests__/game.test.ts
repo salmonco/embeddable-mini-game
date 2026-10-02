@@ -88,3 +88,25 @@ test('점프 버튼을 누르면 캐릭터가 점프한다', () => {
     game.render()
     expect(root.querySelector<HTMLDivElement>('#character')?.style.bottom).toBe(Character.JUMP_HEIGHT * 2 + 'px')
 })
+
+test('게임이 초기화되면 화면에 시작 버튼이 표시된다', () => {
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character)
+    game.init()
+    expect(root.querySelector<HTMLDivElement>('#startButton')).not.toBeNull()
+})
+
+test('시작 버튼을 누르면 게임이 시작된다', () => {
+    vi.useFakeTimers()
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character)
+    game.init()
+    expect(game.requestAnimationFrameId).toBeNull()
+    const startButton = document.querySelector<HTMLButtonElement>('#startButton')
+    startButton?.click()
+    vi.advanceTimersToNextFrame()
+    expect(game.requestAnimationFrameId).not.toBeNull()
+    vi.useRealTimers()
+})
