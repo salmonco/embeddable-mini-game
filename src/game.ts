@@ -133,12 +133,31 @@ class Game {
         }
     }
 
+    private _showStopButton() {
+        const stopButton = this._root.querySelector<HTMLButtonElement>('#stopButton')
+        if (stopButton !== null) {
+            stopButton.style.display = 'block'
+        }
+    }
+
     private _createResumeButton() {
         if (this._root.querySelector('#resumeButton') === null) {
             const resumeButton = document.createElement('button')
             resumeButton.id = 'resumeButton'
             resumeButton.innerText = 'RESUME'
+            resumeButton.addEventListener('click', () => {
+                this._hideResumeButton()
+                this._showStopButton()
+                this.stop()
+            })
             this._root.appendChild(resumeButton)
+        }
+    }
+
+    private _hideResumeButton() {
+        const resumeButton = this._root.querySelector<HTMLButtonElement>('#resumeButton')
+        if (resumeButton !== null) {
+            resumeButton.style.display = 'none'
         }
     }
 }
