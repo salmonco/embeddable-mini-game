@@ -27,7 +27,12 @@ class Game {
         if (characterContainer === null || hurdleContainer === null) {
             throw new Error('초기화해 주세요')
         }
-        characterContainer.style.bottom = this._character.footHeight + 'px'
+        const nextBottom = this._character.footHeight + 'px'
+        if (characterContainer.style.bottom !== nextBottom) {
+            const isRising = parseFloat(nextBottom) > parseFloat(characterContainer.style.bottom || '0')
+            characterContainer.style.transitionTimingFunction = isRising ? 'ease-out' : 'ease-in'
+            characterContainer.style.bottom = nextBottom
+        }
         hurdleContainer.style.left = this._hurdle.x + 'px'
     }
 

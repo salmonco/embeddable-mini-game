@@ -9,6 +9,7 @@
     width: 100px;
     height: 150px;
     background-color: aqua;
+    transition: bottom 0.4s ease-out;
 }
 
 #hurdle {
