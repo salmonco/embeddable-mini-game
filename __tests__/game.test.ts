@@ -62,6 +62,15 @@ test('게임이 초기화되면 허들이 허들 크기 상수대로 그려진�
     expect(hurdleContainer?.style.height).toBe(Hurdle.HEIGHT + 'px')
 })
 
+test('게임이 초기화되면 캐릭터는 땅에, 허들은 시작 위치에 그려진다', () => {
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character, new Hurdle(300))
+    game.init()
+    expect(root.querySelector<HTMLDivElement>('#character')?.style.bottom).toBe('0px')
+    expect(root.querySelector<HTMLDivElement>('#hurdle')?.style.left).toBe('300px')
+})
+
 test('게임이 초기화되면 화면에 시작 버튼이 표시된다', () => {
     const root = document.createElement('div')
     const character = new Character()
@@ -338,6 +347,22 @@ test('점프하다 게임 오버된 뒤 다시 시작하면 캐릭터가 땅에�
     expect(character.footHeight).toBe(0)
     expect(root.querySelector<HTMLDivElement>('#character')?.style.bottom).toBe('0px')
     game.stop()
+    vi.useRealTimers()
+})
+
+test('허들에 닿아 게임 오버되면 부딪힌 순간의 위치가 화면에 그려진다', () => {
+    vi.useFakeTimers()
+    const root = document.createElement('div')
+    const character = new Character()
+    const hurdle = new Hurdle(Character.WIDTH)
+    const game = new Game(root, character, hurdle)
+    game.init()
+    const startButton = document.querySelector<HTMLButtonElement>('#startButton')
+    startButton?.click()
+    vi.advanceTimersToNextFrame()
+    vi.advanceTimersToNextFrame()
+    expect(game.requestAnimationFrameId).toBeNull()
+    expect(root.querySelector<HTMLDivElement>('#hurdle')?.style.left).toBe(hurdle.x + 'px')
     vi.useRealTimers()
 })
 

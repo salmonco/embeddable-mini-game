@@ -20,6 +20,7 @@ class Game {
         this._createCharacter()
         this._createHurdle()
         this._createStartButton()
+        this.render()
     }
 
     render() {
@@ -81,11 +82,11 @@ class Game {
         this._lastTime = now
         this._hurdle.tick(delta)
         this._character.tick(delta)
+        this.render()
         if (!this._character.isSurvive(this._hurdle)) {
             this._gameOver()
             return
         }
-        this.render()
         this._requestAnimationFrameId = requestAnimationFrame(this._animate)
     }
 
