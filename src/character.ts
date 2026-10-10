@@ -1,9 +1,11 @@
-import type Hurdle from "./hurdle.js"
+import Hurdle from "./hurdle.js"
 
 class Character {
     static JUMP_AFTER_MS = 1000
     static MAX_JUMP_COUNT = 2
     static JUMP_HEIGHT = 200
+    static WIDTH = 100
+    static HEIGHT = 150
 
     private _footHeight = 0
     private _jump_start_ms = 0
@@ -30,7 +32,7 @@ class Character {
     }
 
     isMeetHurdle(hurdleX: number) {
-        return this._x === hurdleX
+        return hurdleX < this._x + Character.WIDTH && hurdleX + Hurdle.WIDTH > this._x
     }
 
     isSurvive(hurdle: Hurdle) {

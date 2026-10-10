@@ -1,9 +1,9 @@
 import { test, expect } from 'vitest'
 import Hurdle from '../src/hurdle.js'
 
-test('허들의 기본 높이는 1이다', () => {
+test('허들의 높이는 허들 높이 상수와 같다', () => {
     const hurdle = new Hurdle(4)
-    expect(hurdle.height).toBe(1)
+    expect(hurdle.height).toBe(Hurdle.HEIGHT)
 })
 
 test('허들은 생성될 때 x 좌표가 결정된다', () => {

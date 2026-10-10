@@ -6,8 +6,6 @@
 #character {
     position: absolute;
     left: 0;
-    width: 100px;
-    height: 150px;
     background-color: aqua;
     transition: bottom 0.4s ease-out;
 }
@@ -15,8 +13,6 @@
 #hurdle {
     position: absolute;
     bottom: 0;
-    width: 50px;
-    height: 50px;
     background-color: black;
 }
 
@@ -56,4 +52,14 @@
     background-color: green;
     color: white;
     float: right;
+}
+
+#gameOverMessage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
+    font-weight: bold;
+    color: red;
 }

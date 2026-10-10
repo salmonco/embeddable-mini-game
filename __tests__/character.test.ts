@@ -56,6 +56,30 @@ test('캐릭터의 x 좌표와 허들의 x 좌표가 같으면 만난다', () =>
     expect(character.isMeetHurdle(hurdle.x)).toBe(true)
 })
 
+test('허들이 캐릭터와 일부 겹치면 만난다', () => {
+    const character = new Character()
+    const hurdle = new Hurdle(character.x + Character.WIDTH / 2)
+    expect(character.isMeetHurdle(hurdle.x)).toBe(true)
+})
+
+test('허들이 캐릭터의 왼쪽 끝을 지나쳤어도 아직 겹쳐 있으면 만난다', () => {
+    const character = new Character()
+    const hurdle = new Hurdle(character.x - Hurdle.WIDTH / 2)
+    expect(character.isMeetHurdle(hurdle.x)).toBe(true)
+})
+
+test('허들이 캐릭터의 오른쪽 끝보다 오른쪽에 있으면 만나지 않는다', () => {
+    const character = new Character()
+    const hurdle = new Hurdle(character.x + Character.WIDTH)
+    expect(character.isMeetHurdle(hurdle.x)).toBe(false)
+})
+
+test('허들이 캐릭터의 왼쪽으로 완전히 지나가면 만나지 않는다', () => {
+    const character = new Character()
+    const hurdle = new Hurdle(character.x - Hurdle.WIDTH)
+    expect(character.isMeetHurdle(hurdle.x)).toBe(false)
+})
+
 test('캐릭터가 허들을 만났을 때 발 높이가 허들의 높이보다 낮으면 죽는다', () => {
     const character = new Character()
     const hurdle = new Hurdle(character.x)

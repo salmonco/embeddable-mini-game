@@ -1,7 +1,9 @@
 class Hurdle {
     static SPEED = 0.15
+    static WIDTH = 50
+    static HEIGHT = 50
 
-    private _height = 1
+    private _height = Hurdle.HEIGHT
     private _x
 
     constructor(x: number) {

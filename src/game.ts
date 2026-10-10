@@ -1,4 +1,4 @@
-import type Character from "./character.js";
+import Character from "./character.js";
 import Hurdle from "./hurdle.js";
 
 class Game {
@@ -82,11 +82,21 @@ class Game {
         this._lastTime = now
         this._hurdle.tick(delta)
         if (!this._character.isSurvive(this._hurdle)) {
-            this.stop()
+            this._gameOver()
             return
         }
         this.render()
         this._requestAnimationFrameId = requestAnimationFrame(this._animate)
+    }
+
+    private _gameOver() {
+        this._hideStopButton()
+        this._hidePauseButton()
+        this._hideResumeButton()
+        this._showStartButton()
+        this._createGameOverMessage()
+        this._showGameOverMessage()
+        this.stop()
     }
 
     private _createRoot() {
@@ -100,6 +110,8 @@ class Game {
         if (this._root.querySelector('#character') === null) {
             const characterContainer = document.createElement('div')
             characterContainer.id = 'character'
+            characterContainer.style.width = Character.WIDTH + 'px'
+            characterContainer.style.height = Character.HEIGHT + 'px'
             this._root.appendChild(characterContainer)
         }
     }
@@ -108,6 +120,8 @@ class Game {
         if (this._root.querySelector('#hurdle') === null) {
             const hurdleContainer = document.createElement('div')
             hurdleContainer.id = 'hurdle'
+            hurdleContainer.style.width = Hurdle.WIDTH + 'px'
+            hurdleContainer.style.height = Hurdle.HEIGHT + 'px'
             this._root.appendChild(hurdleContainer)
         }
     }
@@ -119,6 +133,7 @@ class Game {
             startButton.innerText = 'START!'
             startButton.addEventListener('click', () => {
                 this._hideStartButton()
+                this._hideGameOverMessage()
                 this._createJumpButton()
                 this._createStopButton()
                 this._createPauseButton()
@@ -238,6 +253,29 @@ class Game {
         const resumeButton = this._root.querySelector<HTMLButtonElement>('#resumeButton')
         if (resumeButton !== null) {
             resumeButton.style.display = 'block'
+        }
+    }
+
+    private _createGameOverMessage() {
+        if (this._root.querySelector('#gameOverMessage') === null) {
+            const gameOverMessage = document.createElement('div')
+            gameOverMessage.id = 'gameOverMessage'
+            gameOverMessage.innerText = 'GAME OVER'
+            this._root.appendChild(gameOverMessage)
+        }
+    }
+
+    private _hideGameOverMessage() {
+        const gameOverMessage = this._root.querySelector<HTMLDivElement>('#gameOverMessage')
+        if (gameOverMessage !== null) {
+            gameOverMessage.style.display = 'none'
+        }
+    }
+
+    private _showGameOverMessage() {
+        const gameOverMessage = this._root.querySelector<HTMLDivElement>('#gameOverMessage')
+        if (gameOverMessage !== null) {
+            gameOverMessage.style.display = 'block'
         }
     }
 }
