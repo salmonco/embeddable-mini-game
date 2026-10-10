@@ -28,17 +28,13 @@ class Game {
         if (characterContainer === null || hurdleContainer === null) {
             throw new Error('초기화해 주세요')
         }
-        const nextBottom = this._character.footHeight + 'px'
-        if (characterContainer.style.bottom !== nextBottom) {
-            const isRising = parseFloat(nextBottom) > parseFloat(characterContainer.style.bottom || '0')
-            characterContainer.style.transitionTimingFunction = isRising ? 'ease-out' : 'ease-in'
-            characterContainer.style.bottom = nextBottom
-        }
+        characterContainer.style.bottom = this._character.footHeight + 'px'
         hurdleContainer.style.left = this._hurdle.x + 'px'
     }
 
     start() {
         this._hurdle.reset()
+        this._character.reset()
         this._lastTime = null
         this._requestAnimationFrameId = requestAnimationFrame(this._animate)
     }
@@ -63,6 +59,7 @@ class Game {
         if (this.requestAnimationFrameId === null) {
             return
         }
+        this._lastTime = null
         this._requestAnimationFrameId = requestAnimationFrame(this._animate)
         this._isPaused = false
     }
@@ -83,6 +80,7 @@ class Game {
         const delta = this._lastTime === null ? 0 : now - this._lastTime
         this._lastTime = now
         this._hurdle.tick(delta)
+        this._character.tick(delta)
         if (!this._character.isSurvive(this._hurdle)) {
             this._gameOver()
             return

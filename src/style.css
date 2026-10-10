@@ -7,7 +7,6 @@
     position: absolute;
     left: 0;
     background-color: aqua;
-    transition: bottom 0.4s ease-out;
 }
 
 #hurdle {
