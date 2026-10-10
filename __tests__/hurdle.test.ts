@@ -19,3 +19,11 @@ test('허들은 시간이 지날 때마다 일정한 속도로 왼쪽으로 이�
     hurdle.tick(elapsed_ms)
     expect(hurdle.x).toBe(6 - distance)
 })
+
+test('허들을 초기화하면 생성될 때의 x 좌표로 돌아간다', () => {
+    const hurdle = new Hurdle(6)
+    hurdle.tick(1000)
+    expect(hurdle.x).not.toBe(6)
+    hurdle.reset()
+    expect(hurdle.x).toBe(6)
+})

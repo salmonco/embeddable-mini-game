@@ -38,6 +38,8 @@ class Game {
     }
 
     start() {
+        this._hurdle.reset()
+        this._lastTime = null
         this._requestAnimationFrameId = requestAnimationFrame(this._animate)
     }
 
