@@ -1,7 +1,7 @@
 import type Hurdle from "./hurdle.js"
 
 class Character {
-    static JUMP_AFTER_MS = 2000
+    static JUMP_AFTER_MS = 1000
     static MAX_JUMP_COUNT = 2
     static JUMP_HEIGHT = 200
 

@@ -1,5 +1,5 @@
 class Hurdle {
-    static SPEED = 0.01
+    static SPEED = 0.15
 
     private _height = 1
     private _x
