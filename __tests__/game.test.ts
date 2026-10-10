@@ -2,6 +2,7 @@
 import { test, expect, afterEach, vi } from 'vitest'
 import Character from '../src/character.js'
 import Game from '../src/game.js';
+import Hurdle from '../src/hurdle.js';
 
 afterEach(() => {
     document.body.innerHTML = ''
@@ -159,6 +160,21 @@ test('점프 버튼을 누르면 캐릭터가 점프한다', () => {
     jumpButton?.click()
     vi.advanceTimersToNextFrame()
     expect(root.querySelector<HTMLDivElement>('#character')?.style.bottom).toBe(Character.JUMP_HEIGHT * 2 + 'px')
+    vi.useRealTimers()
+})
+
+test('캐릭터가 허들에 닿아 죽으면 게임이 종료된다', () => {
+    vi.useFakeTimers()
+    const root = document.createElement('div')
+    const character = new Character()
+    const hurdle = new Hurdle(0)
+    const game = new Game(root, character, hurdle)
+    game.init()
+    const startButton = document.querySelector<HTMLButtonElement>('#startButton')
+    startButton?.click()
+    vi.advanceTimersToNextFrame()
+    expect(game.requestAnimationFrameId).toBeNull()
+    vi.useRealTimers()
 })
 
 // 비주얼

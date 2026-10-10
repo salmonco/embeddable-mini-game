@@ -4,14 +4,15 @@ import Hurdle from "./hurdle.js";
 class Game {
     private _root: HTMLDivElement
     private _character: Character
-    private _hurdle: Hurdle = new Hurdle(300)
+    private _hurdle: Hurdle
     private _requestAnimationFrameId: number | null = null
     private _isPaused: boolean = false
     private _lastTime: number | null = null
 
-    constructor(root: HTMLDivElement, character: Character) {
+    constructor(root: HTMLDivElement, character: Character, hurdle = new Hurdle(300)) {
         this._root = root
         this._character = character
+        this._hurdle = hurdle
     }
 
     init() {
@@ -80,6 +81,10 @@ class Game {
         const delta = this._lastTime === null ? 0 : now - this._lastTime
         this._lastTime = now
         this._hurdle.tick(delta)
+        if (!this._character.isSurvive(this._hurdle)) {
+            this.stop()
+            return
+        }
         this.render()
         this._requestAnimationFrameId = requestAnimationFrame(this._animate)
     }
