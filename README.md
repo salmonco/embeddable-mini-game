@@ -126,4 +126,4 @@ Commit messages follow `type(scope): summary`, for example `feat(game): add paus
 
 ## License
 
-MIT
+[MIT](LICENSE)
