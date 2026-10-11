@@ -580,3 +580,28 @@ test('종료 버튼을 누르면 화면에 게임 오버 메시지가 표시되�
     stopButton?.click()
     expect(root.querySelector<HTMLDivElement>('#gameOverMessage')?.style.display ?? 'none').toBe('none')
 })
+
+// 캐릭터 사진
+test('게임이 초기화되면 캐릭터 사진 업로드 input이 표시된다', () => {
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character)
+    game.init()
+    const characterImageInput = root.querySelector<HTMLInputElement>('#characterImageInput')
+    expect(characterImageInput?.type).toBe('file')
+    expect(characterImageInput?.accept).toBe('image/*')
+})
+
+test('캐릭터 사진을 업로드하면 해당 사진이 캐릭터로 표시된다', () => {
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:character-image')
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character)
+    game.init()
+    const characterImageInput = root.querySelector<HTMLInputElement>('#characterImageInput')
+    const file = new File(['dummy'], 'cat.png', { type: 'image/png' })
+    Object.defineProperty(characterImageInput, 'files', { value: [file] })
+    characterImageInput?.dispatchEvent(new Event('change'))
+    const characterContainer = root.querySelector<HTMLDivElement>('#character')
+    expect(characterContainer?.style.backgroundImage).toBe('url("blob:character-image")')
+})

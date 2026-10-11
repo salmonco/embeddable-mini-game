@@ -20,6 +20,7 @@ class Game {
         this._createCharacter()
         this._createHurdle()
         this._createStartButton()
+        this._createCharacterImageInput()
         this.render()
     }
 
@@ -295,6 +296,27 @@ class Game {
         const gameOverMessage = this._root.querySelector<HTMLDivElement>('#gameOverMessage')
         if (gameOverMessage !== null) {
             gameOverMessage.style.display = 'block'
+        }
+    }
+
+    private _createCharacterImageInput() {
+        if (this._root.querySelector('#characterImageInput') === null) {
+            const characterImageInput = document.createElement('input')
+            characterImageInput.id = 'characterImageInput'
+            characterImageInput.type = 'file'
+            characterImageInput.accept = 'image/*'
+            characterImageInput.addEventListener('change', (e) => {
+                const files = (e.target as HTMLInputElement).files
+                if (files === null || !files[0]) {
+                    return
+                }
+                const characterContainer = this._root.querySelector<HTMLDivElement>('#character')
+                if (characterContainer === null) {
+                    return
+                }
+                characterContainer.style.backgroundImage = `url("${URL.createObjectURL(files[0])}")`
+            })
+            this._root.appendChild(characterImageInput)
         }
     }
 }
