@@ -33,20 +33,17 @@
     position: absolute;
     margin-left: var(--lane-offset);
     margin-bottom: calc(var(--ground-height) + 2px);
-}
-
-#character {
-    left: 0;
-    border-radius: 10px;
     background-size: 100% auto;
     background-repeat: no-repeat;
     background-position: center bottom;
 }
 
+#character {
+    left: 0;
+}
+
 .hurdleItem {
     bottom: 0;
-    border-radius: 4px;
-    background-color: #374151;
 }
 
 /* 버튼 공통 */

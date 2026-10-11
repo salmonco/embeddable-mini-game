@@ -605,3 +605,30 @@ test('캐릭터 사진을 업로드하면 해당 사진이 캐릭터로 표시�
     const characterContainer = root.querySelector<HTMLDivElement>('#character')
     expect(characterContainer?.style.backgroundImage).toBe('url("blob:character-image")')
 })
+
+// 허들 사진
+test('게임이 초기화되면 허들 사진 업로드 input이 표시된다', () => {
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character)
+    game.init()
+    const hurdleImageInput = root.querySelector<HTMLInputElement>('#hurdleImageInput')
+    expect(hurdleImageInput?.type).toBe('file')
+    expect(hurdleImageInput?.accept).toBe('image/*')
+})
+
+test('허들 사진을 업로드하면 해당 사진이 허들로 표시된다', () => {
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:hurdle-image')
+    const root = document.createElement('div')
+    const character = new Character()
+    const game = new Game(root, character)
+    game.init()
+    const hurdleImageInput = root.querySelector<HTMLInputElement>('#hurdleImageInput')
+    const file = new File(['dummy'], 'cucumber.png', { type: 'image/png' })
+    Object.defineProperty(hurdleImageInput, 'files', { value: [file] })
+    hurdleImageInput?.dispatchEvent(new Event('change'))
+    const hurdles = root.querySelectorAll<HTMLDivElement>('.hurdleItem')
+    for (const hurdle of hurdles) {
+        expect(hurdle?.style.backgroundImage).toBe('url("blob:hurdle-image")')
+    }
+})

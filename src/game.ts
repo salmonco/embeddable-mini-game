@@ -21,6 +21,7 @@ class Game {
         this._createHurdle()
         this._createStartButton()
         this._createCharacterImageInput()
+        this._createHurdleImageInput()
         this.render()
     }
 
@@ -317,6 +318,26 @@ class Game {
                 characterContainer.style.backgroundImage = `url("${URL.createObjectURL(files[0])}")`
             })
             this._root.appendChild(characterImageInput)
+        }
+    }
+
+    private _createHurdleImageInput() {
+        if (this._root.querySelector('#hurdleImageInput') === null) {
+            const hurdleImageInput = document.createElement('input')
+            hurdleImageInput.id = 'hurdleImageInput'
+            hurdleImageInput.type = 'file'
+            hurdleImageInput.accept = 'image/*'
+            hurdleImageInput.addEventListener('change', (e) => {
+                const files = (e.target as HTMLInputElement).files
+                if (files === null || !files[0]) {
+                    return
+                }
+                const hurdleItems = this._root.querySelectorAll<HTMLDivElement>('.hurdleItem')
+                for (const hurdle of hurdleItems) {
+                    hurdle.style.backgroundImage = `url("${URL.createObjectURL(files[0])}")`
+                }
+            })
+            this._root.appendChild(hurdleImageInput)
         }
     }
 }
