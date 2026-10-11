@@ -1,59 +1,167 @@
+/* shadow root 밖 부모 요소에서 상속되는 글꼴, 색 등을 끊는다 */
+:host {
+    all: initial;
+    display: block;
+}
+
 #mini-game-root {
+    --sky: #f4f6f8;
+    --ground: #e4dfd3;
+    --ground-line: #8a8170;
+    --ground-height: 56px;
+    --lane-offset: 40px;
+    --ink: #1f2937;
+    --primary: #2563eb;
+    --primary-pressed: #1d4ed8;
+
     position: relative;
-    height: 100vh;
+    width: 100%;
+    max-width: 720px;
+    height: 620px;
+    margin: 24px auto;
+    overflow: hidden;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    background:
+        linear-gradient(to top,
+            var(--ground) 0 var(--ground-height),
+            var(--ground-line) var(--ground-height) calc(var(--ground-height) + 2px),
+            var(--sky) calc(var(--ground-height) + 2px));
+    font-family: system-ui, -apple-system, 'Apple SD Gothic Neo', sans-serif;
+    color: var(--ink);
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* 캐릭터와 허들은 같은 기준선(땅 위, 왼쪽 여백)에서 그려야 충돌 판정과 화면이 맞는다 */
+#character,
+.hurdleItem {
+    position: absolute;
+    margin-left: var(--lane-offset);
+    margin-bottom: calc(var(--ground-height) + 2px);
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    background-position: center bottom;
 }
 
 #character {
-    position: absolute;
     left: 0;
-    width: 100px;
-    height: 150px;
-    background-color: aqua;
-    transition: bottom 0.4s ease-out;
+    border-radius: 10px;
+    background-color: var(--primary);
 }
 
-#hurdle {
-    position: absolute;
+.hurdleItem {
     bottom: 0;
-    width: 50px;
-    height: 50px;
-    background-color: black;
+    border-radius: 4px;
+    background-color: #374151;
 }
 
-#jumpButton {
-    width: 100px;
-    height: 100px;
-    background-color: orange;
-    color: white;
+/* 버튼 공통 */
+#mini-game-root button {
+    position: absolute;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: var(--ink);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: background-color 0.1s, transform 0.05s;
 }
 
-#startButton {
-    width: 100px;
-    height: 100px;
-    background-color: blue;
-    color: white;
-    float: right;
+#mini-game-root button:hover {
+    background-color: #f3f4f6;
+}
+
+#mini-game-root button:active {
+    transform: scale(0.97);
+}
+
+#mini-game-root button:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* 시작: 화면 가운데 */
+#mini-game-root #startButton {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 160px;
+    height: 52px;
+    border-color: var(--primary);
+    background-color: var(--primary);
+    color: #ffffff;
+    font-size: 16px;
+}
+
+#mini-game-root #startButton:hover {
+    background-color: var(--primary-pressed);
+}
+
+#mini-game-root #startButton:active {
+    transform: translate(-50%, -50%) scale(0.97);
+}
+
+/* 점프: 땅 영역 가운데, 누르기 쉽게 넓게 */
+#mini-game-root #jumpButton {
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 40px;
+    border-color: var(--ink);
+    background-color: var(--ink);
+    color: #ffffff;
+}
+
+#mini-game-root #jumpButton:hover {
+    background-color: #111827;
+}
+
+#mini-game-root #jumpButton:active {
+    transform: translateX(-50%) scale(0.97);
+}
+
+/* 종료, 중단, 재개: 오른쪽 위에 작게. 중단과 재개는 번갈아 보이므로 같은 자리 */
+#stopButton,
+#pauseButton,
+#resumeButton {
+    top: 16px;
+    width: 80px;
+    height: 32px;
+}
+
+#mini-game-root #stopButton,
+#mini-game-root #pauseButton,
+#mini-game-root #resumeButton {
+    font-size: 12px;
 }
 
 #stopButton {
-    width: 100px;
-    height: 100px;
-    background-color: red;
-    color: white;
-    float: right;
+    right: 16px;
 }
 
-#pauseButton {
-    width: 100px;
-    height: 100px;
-    background-color: yellow;
-    float: right;
+#mini-game-root #stopButton {
+    color: #b91c1c;
 }
 
+#pauseButton,
 #resumeButton {
-    width: 100px;
-    height: 100px;
-    background-color: green;
-    color: white;
-    float: right;
+    right: 104px;
+}
+
+#gameOverMessage {
+    position: absolute;
+    top: calc(50% - 72px);
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+    white-space: nowrap;
 }

@@ -1,7 +1,5 @@
-import Character from "./src/character.js";
-import Game from "./src/game.js";
+import { createMiniGame } from "./src/index.js";
 
-const root = document.createElement('div')
-const character = new Character()
-const game = new Game(root, character)
-game.init()
+const container = document.createElement('div')
+document.body.appendChild(container)
+createMiniGame(container)

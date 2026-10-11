@@ -1,11 +1,24 @@
 class Hurdle {
-    static SPEED = 0.01
+    static SPEED = 0.15
+    static WIDTH = 50
+    static HEIGHT = 50
 
-    private _height = 1
+    private _height
+    private _initialX
     private _x
 
-    constructor(x: number) {
+    constructor(x: number, height: number = Hurdle.HEIGHT) {
+        this._initialX = x
         this._x = x
+        this._height = height
+    }
+
+    reset() {
+        this._x = this._initialX
+    }
+
+    resize(height: number) {
+        this._height = height
     }
 
     tick(delta: number) {

@@ -1,42 +1,67 @@
-import type Character from "./character.js";
+import Character from "./character.js";
 import Hurdle from "./hurdle.js";
+import css from "./style.css?inline";
 
 class Game {
+    private _container: HTMLElement
+    private _host: HTMLDivElement
     private _root: HTMLDivElement
     private _character: Character
-    private _hurdle: Hurdle = new Hurdle(300)
+    private _hurdles: Hurdle[]
     private _requestAnimationFrameId: number | null = null
     private _isPaused: boolean = false
     private _lastTime: number | null = null
+    private _characterImageUrl: string | null = null
+    private _hurdleImageUrl: string | null = null
 
-    constructor(root: HTMLDivElement, character: Character) {
-        this._root = root
+    constructor(container: HTMLElement, character: Character, hurdles: Hurdle[] = [new Hurdle(300)]) {
+        this._container = container
+        // 페이지와 DOM, CSS가 섞이지 않도록 게임은 호스트의 shadow root 안에 그린다
+        this._host = document.createElement('div')
+        this._host.setAttribute('data-mini-game', '')
+        const shadowRoot = this._host.attachShadow({ mode: 'open' })
+        const style = document.createElement('style')
+        style.textContent = css
+        this._root = document.createElement('div')
+        this._root.id = 'mini-game-root'
+        shadowRoot.append(style, this._root)
         this._character = character
+        this._hurdles = hurdles
     }
 
     init() {
-        this._createRoot()
+        this._createHost()
         this._createCharacter()
         this._createHurdle()
         this._createStartButton()
+        this._createCharacterImageInput()
+        this._createHurdleImageInput()
+        this.render()
     }
 
     render() {
         const characterContainer = this._root.querySelector<HTMLDivElement>('#character')
         const hurdleContainer = this._root.querySelector<HTMLDivElement>('#hurdle')
+        const hurdleItems = this._root.querySelectorAll<HTMLDivElement>('.hurdleItem')
         if (characterContainer === null || hurdleContainer === null) {
             throw new Error('초기화해 주세요')
         }
-        const nextBottom = this._character.footHeight + 'px'
-        if (characterContainer.style.bottom !== nextBottom) {
-            const isRising = parseFloat(nextBottom) > parseFloat(characterContainer.style.bottom || '0')
-            characterContainer.style.transitionTimingFunction = isRising ? 'ease-out' : 'ease-in'
-            characterContainer.style.bottom = nextBottom
+        characterContainer.style.bottom = this._character.footHeight + 'px'
+        for (let i = 0; i < this._hurdles.length; i++) {
+            const hurdle = this._hurdles[i]
+            const hurdleItem = hurdleItems[i]
+            if (hurdle && hurdleItem) {
+                hurdleItem.style.left = hurdle.x + 'px'
+            }
         }
-        hurdleContainer.style.left = this._hurdle.x + 'px'
     }
 
     start() {
+        for (const hurdle of this._hurdles) {
+            hurdle.reset()
+        }
+        this._character.reset()
+        this._lastTime = null
         this._requestAnimationFrameId = requestAnimationFrame(this._animate)
     }
 
@@ -60,8 +85,30 @@ class Game {
         if (this.requestAnimationFrameId === null) {
             return
         }
+        this._lastTime = null
         this._requestAnimationFrameId = requestAnimationFrame(this._animate)
         this._isPaused = false
+    }
+
+    /**
+     * 게임을 컨테이너에서 치운다
+     * 컨테이너는 게임을 쓰는 쪽의 것이므로 게임이 붙인 루트만 뗀다
+     */
+    destroy() {
+        if (this._requestAnimationFrameId !== null) {
+            cancelAnimationFrame(this._requestAnimationFrameId)
+            this._requestAnimationFrameId = null
+        }
+        this._isPaused = false
+        if (this._characterImageUrl !== null) {
+            URL.revokeObjectURL(this._characterImageUrl)
+            this._characterImageUrl = null
+        }
+        if (this._hurdleImageUrl !== null) {
+            URL.revokeObjectURL(this._hurdleImageUrl)
+            this._hurdleImageUrl = null
+        }
+        this._host.remove()
     }
 
     get requestAnimationFrameId() {
@@ -79,15 +126,33 @@ class Game {
     private _animate = (now: number) => {
         const delta = this._lastTime === null ? 0 : now - this._lastTime
         this._lastTime = now
-        this._hurdle.tick(delta)
+        for (const hurdle of this._hurdles) {
+            hurdle.tick(delta)
+        }
+        this._character.tick(delta)
         this.render()
+        for (const hurdle of this._hurdles) {
+            if (!this._character.isSurvive(hurdle)) {
+                this._gameOver()
+                return
+            }
+        }
         this._requestAnimationFrameId = requestAnimationFrame(this._animate)
     }
 
-    private _createRoot() {
-        if (document.body.querySelector('#mini-game-root') === null) {
-            this._root.id = 'mini-game-root'
-            document.body.appendChild(this._root)
+    private _gameOver() {
+        this._hideStopButton()
+        this._hidePauseButton()
+        this._hideResumeButton()
+        this._showStartButton()
+        this._createGameOverMessage()
+        this._showGameOverMessage()
+        this.stop()
+    }
+
+    private _createHost() {
+        if (this._host.parentElement !== this._container) {
+            this._container.appendChild(this._host)
         }
     }
 
@@ -95,6 +160,8 @@ class Game {
         if (this._root.querySelector('#character') === null) {
             const characterContainer = document.createElement('div')
             characterContainer.id = 'character'
+            characterContainer.style.width = Character.WIDTH + 'px'
+            characterContainer.style.height = Character.HEIGHT + 'px'
             this._root.appendChild(characterContainer)
         }
     }
@@ -104,6 +171,13 @@ class Game {
             const hurdleContainer = document.createElement('div')
             hurdleContainer.id = 'hurdle'
             this._root.appendChild(hurdleContainer)
+            for (const hurdle of this._hurdles) {
+                const hurdleItem = document.createElement('div')
+                hurdleItem.className = 'hurdleItem'
+                hurdleItem.style.width = Hurdle.WIDTH + 'px'
+                hurdleItem.style.height = hurdle.height + 'px'
+                hurdleContainer.appendChild(hurdleItem)
+            }
         }
     }
 
@@ -114,6 +188,7 @@ class Game {
             startButton.innerText = 'START!'
             startButton.addEventListener('click', () => {
                 this._hideStartButton()
+                this._hideGameOverMessage()
                 this._createJumpButton()
                 this._createStopButton()
                 this._createPauseButton()
@@ -233,6 +308,91 @@ class Game {
         const resumeButton = this._root.querySelector<HTMLButtonElement>('#resumeButton')
         if (resumeButton !== null) {
             resumeButton.style.display = 'block'
+        }
+    }
+
+    private _createGameOverMessage() {
+        if (this._root.querySelector('#gameOverMessage') === null) {
+            const gameOverMessage = document.createElement('div')
+            gameOverMessage.id = 'gameOverMessage'
+            gameOverMessage.innerText = 'GAME OVER'
+            this._root.appendChild(gameOverMessage)
+        }
+    }
+
+    private _hideGameOverMessage() {
+        const gameOverMessage = this._root.querySelector<HTMLDivElement>('#gameOverMessage')
+        if (gameOverMessage !== null) {
+            gameOverMessage.style.display = 'none'
+        }
+    }
+
+    private _showGameOverMessage() {
+        const gameOverMessage = this._root.querySelector<HTMLDivElement>('#gameOverMessage')
+        if (gameOverMessage !== null) {
+            gameOverMessage.style.display = 'block'
+        }
+    }
+
+    private _createCharacterImageInput() {
+        if (this._root.querySelector('#characterImageInput') === null) {
+            const characterImageInput = document.createElement('input')
+            characterImageInput.id = 'characterImageInput'
+            characterImageInput.type = 'file'
+            characterImageInput.accept = 'image/*'
+            characterImageInput.addEventListener('change', (e) => {
+                const files = (e.target as HTMLInputElement).files
+                if (files === null || !files[0]) {
+                    return
+                }
+                const characterContainer = this._root.querySelector<HTMLDivElement>('#character')
+                if (characterContainer === null) {
+                    return
+                }
+                const imageUrl = URL.createObjectURL(files[0])
+                this._characterImageUrl = imageUrl
+                characterContainer.style.backgroundImage = `url("${imageUrl}")`
+                characterContainer.style.backgroundColor = 'unset'
+            })
+            this._root.appendChild(characterImageInput)
+        }
+    }
+
+    private _resizeHurdles(height: number) {
+        const hurdleItems = this._root.querySelectorAll<HTMLDivElement>('.hurdleItem')
+        for (let i = 0; i < this._hurdles.length; i++) {
+            this._hurdles[i]?.resize(height)
+            const hurdleItem = hurdleItems[i]
+            if (hurdleItem) {
+                hurdleItem.style.height = height + 'px'
+            }
+        }
+    }
+
+    private _createHurdleImageInput() {
+        if (this._root.querySelector('#hurdleImageInput') === null) {
+            const hurdleImageInput = document.createElement('input')
+            hurdleImageInput.id = 'hurdleImageInput'
+            hurdleImageInput.type = 'file'
+            hurdleImageInput.accept = 'image/*'
+            hurdleImageInput.addEventListener('change', (e) => {
+                const files = (e.target as HTMLInputElement).files
+                if (files === null || !files[0]) {
+                    return
+                }
+                const imageUrl = URL.createObjectURL(files[0])
+                this._hurdleImageUrl = imageUrl
+                const hurdleItems = this._root.querySelectorAll<HTMLDivElement>('.hurdleItem')
+                for (const hurdle of hurdleItems) {
+                    hurdle.style.backgroundImage = `url("${imageUrl}")`
+                    hurdle.style.backgroundColor = 'unset'
+                }
+                // 사진 비율은 불러온 뒤에야 알 수 있으므로 load 후 허들 높이를 사진 비율에 맞춘다
+                const image = new Image()
+                image.onload = () => this._resizeHurdles(image.naturalHeight * Hurdle.WIDTH / image.naturalWidth)
+                image.src = imageUrl
+            })
+            this._root.appendChild(hurdleImageInput)
         }
     }
 }

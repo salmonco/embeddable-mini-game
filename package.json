@@ -1,19 +1,41 @@
 {
   "name": "embeddable-mini-game",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.ts",
+  "description": "Embeddable mini-game for loading screens",
+  "main": "./dist/mini-game.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/mini-game.js"
+    }
+  },
+  "unpkg": "./dist/mini-game.iife.js",
+  "jsdelivr": "./dist/mini-game.iife.js",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
+    "build": "vite build && tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "typecheck:watch": "tsc --noEmit --watch",
     "test": "vitest run",
     "test:watch": "vitest"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "mini-game",
+    "loading",
+    "embed",
+    "shadow-dom",
+    "game"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/salmonco/embeddable-mini-game.git"
+  },
+  "author": "salmonco (https://github.com/salmonco)",
   "license": "MIT",
   "devEngines": {
     "packageManager": {
