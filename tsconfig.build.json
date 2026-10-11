@@ -1,0 +1,12 @@
+{
+  // 패키지 타입 선언(.d.ts)만 dist에 뽑는다. JS는 vite가 빌드한다
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "emitDeclarationOnly": true,
+    "declarationMap": false,
+    "sourceMap": false
+  },
+  "include": ["src"]
+}
