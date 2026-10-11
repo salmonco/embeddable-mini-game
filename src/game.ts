@@ -1,8 +1,10 @@
 import Character from "./character.js";
 import Hurdle from "./hurdle.js";
+import css from "./style.css?inline";
 
 class Game {
     private _container: HTMLElement
+    private _host: HTMLDivElement
     private _root: HTMLDivElement
     private _character: Character
     private _hurdles: Hurdle[]
@@ -14,14 +16,21 @@ class Game {
 
     constructor(container: HTMLElement, character: Character, hurdles: Hurdle[] = [new Hurdle(300)]) {
         this._container = container
+        // 페이지와 DOM, CSS가 섞이지 않도록 게임은 호스트의 shadow root 안에 그린다
+        this._host = document.createElement('div')
+        this._host.setAttribute('data-mini-game', '')
+        const shadowRoot = this._host.attachShadow({ mode: 'open' })
+        const style = document.createElement('style')
+        style.textContent = css
         this._root = document.createElement('div')
         this._root.id = 'mini-game-root'
+        shadowRoot.append(style, this._root)
         this._character = character
         this._hurdles = hurdles
     }
 
     init() {
-        this._createRoot()
+        this._createHost()
         this._createCharacter()
         this._createHurdle()
         this._createStartButton()
@@ -99,7 +108,7 @@ class Game {
             URL.revokeObjectURL(this._hurdleImageUrl)
             this._hurdleImageUrl = null
         }
-        this._root.remove()
+        this._host.remove()
     }
 
     get requestAnimationFrameId() {
@@ -141,9 +150,9 @@ class Game {
         this.stop()
     }
 
-    private _createRoot() {
-        if (this._root.parentElement !== this._container) {
-            this._container.appendChild(this._root)
+    private _createHost() {
+        if (this._host.parentElement !== this._container) {
+            this._container.appendChild(this._host)
         }
     }
 

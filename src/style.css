@@ -1,3 +1,9 @@
+/* shadow root 밖 부모 요소에서 상속되는 글꼴, 색 등을 끊는다 */
+:host {
+    all: initial;
+    display: block;
+}
+
 #mini-game-root {
     --sky: #f4f6f8;
     --ground: #e4dfd3;
