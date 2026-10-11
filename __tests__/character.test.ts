@@ -168,3 +168,20 @@ test('점프해서 충분히 올라간 뒤 허들과 겹치면 산다', () => {
     character.tick(Character.JUMP_DURATION_MS / 2)
     expect(character.isSurvive(hurdle)).toBe(true)
 })
+
+test('같은 발 높이라도 허들이 발보다 낮으면 살고, 높으면 죽는다', () => {
+    const character = new Character()
+    character.jump()
+    character.tick(50)
+    const footHeight = character.footHeight
+    expect(character.isSurvive(new Hurdle(character.x, footHeight - 1))).toBe(true)
+    expect(character.isSurvive(new Hurdle(character.x, footHeight + 1))).toBe(false)
+})
+
+test('점프 높이보다 높은 허들은 점프 꼭대기에서도 넘을 수 없다', () => {
+    const character = new Character()
+    const hurdle = new Hurdle(character.x, Character.JUMP_HEIGHT + 1)
+    character.jump()
+    character.tick(Character.JUMP_DURATION_MS / 2)
+    expect(character.isSurvive(hurdle)).toBe(false)
+})

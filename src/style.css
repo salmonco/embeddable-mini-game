@@ -40,10 +40,14 @@
 
 #character {
     left: 0;
+    border-radius: 10px;
+    background-color: var(--primary);
 }
 
 .hurdleItem {
     bottom: 0;
+    border-radius: 4px;
+    background-color: #374151;
 }
 
 /* 버튼 공통 */

@@ -137,11 +137,11 @@ class Game {
             const hurdleContainer = document.createElement('div')
             hurdleContainer.id = 'hurdle'
             this._root.appendChild(hurdleContainer)
-            for (const _hurdle of this._hurdles) {
+            for (const hurdle of this._hurdles) {
                 const hurdleItem = document.createElement('div')
                 hurdleItem.className = 'hurdleItem'
                 hurdleItem.style.width = Hurdle.WIDTH + 'px'
-                hurdleItem.style.height = Hurdle.HEIGHT + 'px'
+                hurdleItem.style.height = hurdle.height + 'px'
                 hurdleContainer.appendChild(hurdleItem)
             }
         }
@@ -315,9 +315,22 @@ class Game {
                 if (characterContainer === null) {
                     return
                 }
-                characterContainer.style.backgroundImage = `url("${URL.createObjectURL(files[0])}")`
+                const imageUrl = URL.createObjectURL(files[0])
+                characterContainer.style.backgroundImage = `url("${imageUrl}")`
+                characterContainer.style.backgroundColor = 'unset'
             })
             this._root.appendChild(characterImageInput)
+        }
+    }
+
+    private _resizeHurdles(height: number) {
+        const hurdleItems = this._root.querySelectorAll<HTMLDivElement>('.hurdleItem')
+        for (let i = 0; i < this._hurdles.length; i++) {
+            this._hurdles[i]?.resize(height)
+            const hurdleItem = hurdleItems[i]
+            if (hurdleItem) {
+                hurdleItem.style.height = height + 'px'
+            }
         }
     }
 
@@ -332,10 +345,16 @@ class Game {
                 if (files === null || !files[0]) {
                     return
                 }
+                const imageUrl = URL.createObjectURL(files[0])
                 const hurdleItems = this._root.querySelectorAll<HTMLDivElement>('.hurdleItem')
                 for (const hurdle of hurdleItems) {
-                    hurdle.style.backgroundImage = `url("${URL.createObjectURL(files[0])}")`
+                    hurdle.style.backgroundImage = `url("${imageUrl}")`
+                    hurdle.style.backgroundColor = 'unset'
                 }
+                // 사진 비율은 불러온 뒤에야 알 수 있으므로 load 후 허들 높이를 사진 비율에 맞춘다
+                const image = new Image()
+                image.onload = () => this._resizeHurdles(image.naturalHeight * Hurdle.WIDTH / image.naturalWidth)
+                image.src = imageUrl
             })
             this._root.appendChild(hurdleImageInput)
         }

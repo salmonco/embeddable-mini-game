@@ -8,7 +8,31 @@ const ONE_FRAME_MS = 16
 
 afterEach(() => {
     document.body.innerHTML = ''
+    vi.restoreAllMocks()
+    vi.unstubAllGlobals()
 })
+
+/**
+ * happy-dom은 blob URL 사진을 실제로 불러오지 않으므로
+ * src를 넣으면 주어진 크기로 load 된 것처럼 onload를 부르는 Image로 바꾼다
+ */
+function stubImage(width: number, height: number) {
+    vi.stubGlobal('Image', class {
+        naturalWidth = width
+        naturalHeight = height
+        onload: (() => void) | null = null
+        set src(_: string) {
+            setTimeout(() => this.onload?.())
+        }
+    })
+}
+
+function uploadHurdleImage(root: HTMLDivElement) {
+    const hurdleImageInput = root.querySelector<HTMLInputElement>('#hurdleImageInput')
+    const file = new File(['dummy'], 'cucumber.png', { type: 'image/png' })
+    Object.defineProperty(hurdleImageInput, 'files', { value: [file] })
+    hurdleImageInput?.dispatchEvent(new Event('change'))
+}
 
 // 초기화
 test('게임이 초기화되면 document body에 루트 DOM이 붙는다', () => {
@@ -62,6 +86,20 @@ test('게임이 초기화되면 허들이 허들 크기 상수대로 그려진�
         expect(hurdleItem?.style.width).toBe(Hurdle.WIDTH + 'px')
         expect(hurdleItem?.style.height).toBe(Hurdle.HEIGHT + 'px')
     }
+})
+
+test('게임이 초기화되면 허들이 각 허들의 높이대로 그려진다', () => {
+    const root = document.createElement('div')
+    const character = new Character()
+    const hurdles = [new Hurdle(300, 40), new Hurdle(600, 70)]
+    const game = new Game(root, character, hurdles)
+    game.init()
+    const hurdleItems = root.querySelectorAll<HTMLDivElement>('.hurdleItem')
+    expect(hurdleItems.length).toBe(2)
+    expect(hurdleItems[0]?.style.width).toBe(Hurdle.WIDTH + 'px')
+    expect(hurdleItems[0]?.style.height).toBe('40px')
+    expect(hurdleItems[1]?.style.width).toBe(Hurdle.WIDTH + 'px')
+    expect(hurdleItems[1]?.style.height).toBe('70px')
 })
 
 test('게임이 초기화되면 캐릭터는 땅에, 허들은 시작 위치에 그려진다', () => {
@@ -631,4 +669,22 @@ test('허들 사진을 업로드하면 해당 사진이 허들로 표시된다',
     for (const hurdle of hurdles) {
         expect(hurdle?.style.backgroundImage).toBe('url("blob:hurdle-image")')
     }
+})
+
+test('허들 사진을 업로드하면 각 허들의 높이가 사진 비율대로 바뀐다', async () => {
+    stubImage(100, 140)
+    const root = document.createElement('div')
+    const character = new Character()
+    const hurdles = [new Hurdle(300, 40), new Hurdle(600, 90)]
+    const game = new Game(root, character, hurdles)
+    game.init()
+    uploadHurdleImage(root)
+    const expectedHeight = Hurdle.WIDTH * 140 / 100
+    await vi.waitFor(() => {
+        expect(hurdles[0]?.height).toBe(expectedHeight)
+        expect(hurdles[1]?.height).toBe(expectedHeight)
+    })
+    const hurdleItems = root.querySelectorAll<HTMLDivElement>('.hurdleItem')
+    expect(hurdleItems[0]?.style.height).toBe(expectedHeight + 'px')
+    expect(hurdleItems[1]?.style.height).toBe(expectedHeight + 'px')
 })
