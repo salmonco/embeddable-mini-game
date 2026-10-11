@@ -739,3 +739,84 @@ test('허들 사진을 업로드하면 각 허들의 높이가 사진 비율대�
     expect(hurdleItems[0]?.style.height).toBe(expectedHeight + 'px')
     expect(hurdleItems[1]?.style.height).toBe(expectedHeight + 'px')
 })
+
+// 정리
+test('게임을 정리하면 루트 DOM이 컨테이너에서 빠진다', () => {
+    const container = document.createElement('div')
+    const game = new Game(container, new Character())
+    game.init()
+    game.destroy()
+    expect(container.querySelector('#mini-game-root')).toBeNull()
+})
+
+test('게임을 정리해도 컨테이너와 컨테이너에 원래 있던 내용은 남는다', () => {
+    const container = document.createElement('div')
+    const loadingMessage = document.createElement('p')
+    loadingMessage.innerText = '불러오는 중...'
+    container.appendChild(loadingMessage)
+    document.body.appendChild(container)
+    const game = new Game(container, new Character())
+    game.init()
+    game.destroy()
+    expect(document.body.contains(container)).toBe(true)
+    expect(container.contains(loadingMessage)).toBe(true)
+})
+
+test('게임 중에 정리하면 애니메이션이 멈춘다', () => {
+    vi.useFakeTimers()
+    const container = document.createElement('div')
+    const hurdle = new Hurdle(10000)
+    const game = new Game(container, new Character(), [hurdle])
+    game.init()
+    container.querySelector<HTMLButtonElement>('#startButton')?.click()
+    vi.advanceTimersToNextFrame()
+    game.destroy()
+    expect(game.requestAnimationFrameId).toBeNull()
+    const hurdleX = hurdle.x
+    vi.advanceTimersByTime(ONE_FRAME_MS * 10)
+    expect(hurdle.x).toBe(hurdleX)
+    vi.useRealTimers()
+})
+
+test('일시정지 중에 정리하면 재개해도 다시 시작되지 않는다', () => {
+    vi.useFakeTimers()
+    const container = document.createElement('div')
+    const hurdle = new Hurdle(10000)
+    const game = new Game(container, new Character(), [hurdle])
+    game.init()
+    container.querySelector<HTMLButtonElement>('#startButton')?.click()
+    vi.advanceTimersToNextFrame()
+    game.pause()
+    game.destroy()
+    game.resume()
+    expect(game.requestAnimationFrameId).toBeNull()
+    const hurdleX = hurdle.x
+    vi.advanceTimersByTime(ONE_FRAME_MS * 10)
+    expect(hurdle.x).toBe(hurdleX)
+    vi.useRealTimers()
+})
+
+test('게임을 정리하면 업로드한 사진 URL을 해제한다', () => {
+    vi.spyOn(URL, 'createObjectURL')
+        .mockReturnValueOnce('blob:character-image')
+        .mockReturnValueOnce('blob:hurdle-image')
+    const revokeObjectURL = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
+    const container = document.createElement('div')
+    const game = new Game(container, new Character())
+    game.init()
+    const characterImageInput = container.querySelector<HTMLInputElement>('#characterImageInput')
+    Object.defineProperty(characterImageInput, 'files', { value: [new File(['dummy'], 'cat.png', { type: 'image/png' })] })
+    characterImageInput?.dispatchEvent(new Event('change'))
+    uploadHurdleImage(container)
+    game.destroy()
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:character-image')
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:hurdle-image')
+})
+
+test('게임을 두 번 정리해도 에러가 나지 않는다', () => {
+    const container = document.createElement('div')
+    const game = new Game(container, new Character())
+    game.init()
+    game.destroy()
+    expect(() => game.destroy()).not.toThrow()
+})

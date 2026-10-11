@@ -9,6 +9,8 @@ class Game {
     private _requestAnimationFrameId: number | null = null
     private _isPaused: boolean = false
     private _lastTime: number | null = null
+    private _characterImageUrl: string | null = null
+    private _hurdleImageUrl: string | null = null
 
     constructor(container: HTMLElement, character: Character, hurdles: Hurdle[] = [new Hurdle(300)]) {
         this._container = container
@@ -77,6 +79,27 @@ class Game {
         this._lastTime = null
         this._requestAnimationFrameId = requestAnimationFrame(this._animate)
         this._isPaused = false
+    }
+
+    /**
+     * 게임을 컨테이너에서 치운다
+     * 컨테이너는 게임을 쓰는 쪽의 것이므로 게임이 붙인 루트만 뗀다
+     */
+    destroy() {
+        if (this._requestAnimationFrameId !== null) {
+            cancelAnimationFrame(this._requestAnimationFrameId)
+            this._requestAnimationFrameId = null
+        }
+        this._isPaused = false
+        if (this._characterImageUrl !== null) {
+            URL.revokeObjectURL(this._characterImageUrl)
+            this._characterImageUrl = null
+        }
+        if (this._hurdleImageUrl !== null) {
+            URL.revokeObjectURL(this._hurdleImageUrl)
+            this._hurdleImageUrl = null
+        }
+        this._root.remove()
     }
 
     get requestAnimationFrameId() {
@@ -318,6 +341,7 @@ class Game {
                     return
                 }
                 const imageUrl = URL.createObjectURL(files[0])
+                this._characterImageUrl = imageUrl
                 characterContainer.style.backgroundImage = `url("${imageUrl}")`
                 characterContainer.style.backgroundColor = 'unset'
             })
@@ -348,6 +372,7 @@ class Game {
                     return
                 }
                 const imageUrl = URL.createObjectURL(files[0])
+                this._hurdleImageUrl = imageUrl
                 const hurdleItems = this._root.querySelectorAll<HTMLDivElement>('.hurdleItem')
                 for (const hurdle of hurdleItems) {
                     hurdle.style.backgroundImage = `url("${imageUrl}")`
