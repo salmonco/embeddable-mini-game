@@ -2,6 +2,7 @@ import Character from "./character.js";
 import Hurdle from "./hurdle.js";
 
 class Game {
+    private _container: HTMLElement
     private _root: HTMLDivElement
     private _character: Character
     private _hurdles: Hurdle[]
@@ -9,8 +10,10 @@ class Game {
     private _isPaused: boolean = false
     private _lastTime: number | null = null
 
-    constructor(root: HTMLDivElement, character: Character, hurdles: Hurdle[] = [new Hurdle(300)]) {
-        this._root = root
+    constructor(container: HTMLElement, character: Character, hurdles: Hurdle[] = [new Hurdle(300)]) {
+        this._container = container
+        this._root = document.createElement('div')
+        this._root.id = 'mini-game-root'
         this._character = character
         this._hurdles = hurdles
     }
@@ -116,9 +119,8 @@ class Game {
     }
 
     private _createRoot() {
-        if (document.body.querySelector('#mini-game-root') === null) {
-            this._root.id = 'mini-game-root'
-            document.body.appendChild(this._root)
+        if (this._root.parentElement !== this._container) {
+            this._container.appendChild(this._root)
         }
     }
 
