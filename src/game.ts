@@ -4,15 +4,15 @@ import Hurdle from "./hurdle.js";
 class Game {
     private _root: HTMLDivElement
     private _character: Character
-    private _hurdle: Hurdle
+    private _hurdles: Hurdle[]
     private _requestAnimationFrameId: number | null = null
     private _isPaused: boolean = false
     private _lastTime: number | null = null
 
-    constructor(root: HTMLDivElement, character: Character, hurdle = new Hurdle(300)) {
+    constructor(root: HTMLDivElement, character: Character, hurdles: Hurdle[] = [new Hurdle(300)]) {
         this._root = root
         this._character = character
-        this._hurdle = hurdle
+        this._hurdles = hurdles
     }
 
     init() {
@@ -26,15 +26,24 @@ class Game {
     render() {
         const characterContainer = this._root.querySelector<HTMLDivElement>('#character')
         const hurdleContainer = this._root.querySelector<HTMLDivElement>('#hurdle')
+        const hurdleItems = this._root.querySelectorAll<HTMLDivElement>('.hurdleItem')
         if (characterContainer === null || hurdleContainer === null) {
             throw new Error('초기화해 주세요')
         }
         characterContainer.style.bottom = this._character.footHeight + 'px'
-        hurdleContainer.style.left = this._hurdle.x + 'px'
+        for (let i = 0; i < this._hurdles.length; i++) {
+            const hurdle = this._hurdles[i]
+            const hurdleItem = hurdleItems[i]
+            if (hurdle && hurdleItem) {
+                hurdleItem.style.left = hurdle.x + 'px'
+            }
+        }
     }
 
     start() {
-        this._hurdle.reset()
+        for (const hurdle of this._hurdles) {
+            hurdle.reset()
+        }
         this._character.reset()
         this._lastTime = null
         this._requestAnimationFrameId = requestAnimationFrame(this._animate)
@@ -80,12 +89,16 @@ class Game {
     private _animate = (now: number) => {
         const delta = this._lastTime === null ? 0 : now - this._lastTime
         this._lastTime = now
-        this._hurdle.tick(delta)
+        for (const hurdle of this._hurdles) {
+            hurdle.tick(delta)
+        }
         this._character.tick(delta)
         this.render()
-        if (!this._character.isSurvive(this._hurdle)) {
-            this._gameOver()
-            return
+        for (const hurdle of this._hurdles) {
+            if (!this._character.isSurvive(hurdle)) {
+                this._gameOver()
+                return
+            }
         }
         this._requestAnimationFrameId = requestAnimationFrame(this._animate)
     }
@@ -121,9 +134,14 @@ class Game {
         if (this._root.querySelector('#hurdle') === null) {
             const hurdleContainer = document.createElement('div')
             hurdleContainer.id = 'hurdle'
-            hurdleContainer.style.width = Hurdle.WIDTH + 'px'
-            hurdleContainer.style.height = Hurdle.HEIGHT + 'px'
             this._root.appendChild(hurdleContainer)
+            for (const _hurdle of this._hurdles) {
+                const hurdleItem = document.createElement('div')
+                hurdleItem.className = 'hurdleItem'
+                hurdleItem.style.width = Hurdle.WIDTH + 'px'
+                hurdleItem.style.height = Hurdle.HEIGHT + 'px'
+                hurdleContainer.appendChild(hurdleItem)
+            }
         }
     }
 
